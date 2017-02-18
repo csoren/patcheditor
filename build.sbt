@@ -14,7 +14,10 @@ persistLauncher in Test := false
 libraryDependencies ++= Seq(
   "org.scala-js" %%% "scalajs-dom" % "0.9.1",
   "be.doeraene" %%% "scalajs-jquery" % "0.9.1",
-  "com.thoughtworks.binding" %%% "dom" % "11.0.0-M1"
+  "com.thoughtworks.binding" %%% "dom" % "11.0.0-M1",
+  "com.github.lukajcb" %%% "rxscala-js" % "0.13.2"
 )
+
+jsDependencies += "org.webjars.npm" % "rxjs" % "5.0.1" / "bundles/Rx.min.js" commonJSName "Rx"
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
