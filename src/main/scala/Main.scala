@@ -6,6 +6,8 @@ import org.scalajs.dom.html.{Select, Option => HtmlOption}
 import org.scalajs.jquery.jQuery
 import org.scalajs.{dom => jsdom}
 import rxscalajs.Subject
+import rxscalajs.subjects.ReplaySubject
+import webmidi.WebMidi
 
 import scala.concurrent.Future
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
@@ -16,6 +18,8 @@ object Main extends js.JSApp {
   private case class OptionValue(index: Int, patch: Patch)
 
   private val patchListObservable: Subject[List[(String, OptionValue)]] = Subject()
+
+  private val midiEnabledObservable: Subject[Boolean] = ReplaySubject.withSize(1)
 
   private val allPatches: Future[js.Array[Patch]] =
     droid.Patch
@@ -47,22 +51,38 @@ object Main extends js.JSApp {
     }
   }
 
-  private def patchOption(text: String, value: OptionValue): HtmlOption = {
+  private def mkOption(text: String, value: String): HtmlOption = {
     val option = jsdom.document.createElement("option").asInstanceOf[HtmlOption]
     option.text = text
-    option.value = value.index.toString
+    option.value = value
     option
   }
+
+  private def patchOption(text: String, value: OptionValue): HtmlOption =
+    mkOption(text, value.index.toString)
+
+  private def updateOptions(select: Select, options: Seq[HtmlOption]): Unit =
+    jQuery(select)
+      .empty()
+      .append(options:_*)
+      .material_select()
 
   @dom
   private def patchSelector: Binding[Select] = {
     val select: Select = <select />
     patchListObservable.subscribe { (patches: List[(String, OptionValue)]) =>
       val options = patches.map { case (text, value) => patchOption(text, value) }
-      jQuery(select)
-        .empty()
-        .append(options:_*)
-        .material_select()
+      updateOptions(select, options)
+    }
+    select
+  }
+
+  @dom
+  private def midiInputSelector: Binding[Select] = {
+    val select: Select = <select />
+    midiEnabledObservable.filter(_ == true).subscribe { _ =>
+      val options = WebMidi.inputs.map { p => mkOption(p.name, p.id) }
+      updateOptions(select, options)
     }
     select
   }
@@ -75,9 +95,33 @@ object Main extends js.JSApp {
     </div>
   }
 
+  @dom
+  private def midiInputDiv: Binding[Node] = {
+    <div class="input-field col s12">
+      { midiInputSelector.bind }
+      <label>MIDI input</label>
+    </div>
+  }
+
+  @dom
+  private def layout: Binding[Node] =
+    <div>
+      { midiInputDiv.bind }
+      { patchSelectorDiv.bind }
+    </div>
+
+  private def enableMidi(): Unit =
+    WebMidi.enable(sysex = false) { error =>
+      if (error.isEmpty)
+        midiEnabledObservable.next(true)
+      else
+        println(error.get)
+    }
+
   def main(): Unit = {
-    dom.render(jsdom.document.getElementById("playground"), patchSelectorDiv)
+    dom.render(jsdom.document.getElementById("playground"), layout)
     jQuery("select").material_select()
     updatePatches()
+    enableMidi()
   }
 }

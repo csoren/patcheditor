@@ -18,6 +18,9 @@ libraryDependencies ++= Seq(
   "com.github.lukajcb" %%% "rxscala-js" % "0.13.2"
 )
 
-jsDependencies += "org.webjars.npm" % "rxjs" % "5.0.1" / "bundles/Rx.min.js" commonJSName "Rx"
+jsDependencies ++= Seq(
+  "org.webjars.npm" % "rxjs" % "5.0.1" / "bundles/Rx.min.js" commonJSName "Rx",
+  "org.webjars.bower" % "WebMidi" % "2.0.0-rc.4" / "src/webmidi.js"
+)
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
