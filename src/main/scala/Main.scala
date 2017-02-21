@@ -7,7 +7,7 @@ import org.scalajs.jquery.jQuery
 import org.scalajs.{dom => jsdom}
 import rxscalajs.Subject
 import rxscalajs.subjects.ReplaySubject
-import webmidi.WebMidi
+import webmidi.{PortState, WebMidi}
 
 import scala.concurrent.Future
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
@@ -20,6 +20,15 @@ object Main extends js.JSApp {
   private val patchListObservable: Subject[List[(String, OptionValue)]] = Subject()
 
   private val midiEnabledObservable: Subject[Boolean] = ReplaySubject.withSize(1)
+
+  private val midiConnectedObservable: Subject[webmidi.Event] = Subject()
+
+  private val midiDisconnectedObservable: Subject[webmidi.Event] = Subject()
+
+  midiEnabledObservable.filter(_ == true).subscribe { _ =>
+    WebMidi.addListener(PortState.connected) { midiConnectedObservable.next }
+    WebMidi.addListener(PortState.disconnected) { midiDisconnectedObservable.next }
+  }
 
   private val allPatches: Future[js.Array[Patch]] =
     droid.Patch
@@ -78,10 +87,16 @@ object Main extends js.JSApp {
   }
 
   @dom
-  private def midiInputSelector: Binding[Select] = {
+  private def midiOutputSelector: Binding[Select] = {
     val select: Select = <select />
-    midiEnabledObservable.filter(_ == true).subscribe { _ =>
-      val options = WebMidi.inputs.map { p => mkOption(p.name, p.id) }
+    val events =
+      midiEnabledObservable.map(_ => ())
+        .merge(midiConnectedObservable.map(_ => ()))
+        .merge(midiDisconnectedObservable.map(_ => ()))
+
+    events.subscribe { _ =>
+      println(s"Updating output list ${WebMidi.outputs}")
+      val options = WebMidi.outputs.map { p => mkOption(p.name, p.id) }
       updateOptions(select, options)
     }
     select
@@ -96,24 +111,26 @@ object Main extends js.JSApp {
   }
 
   @dom
-  private def midiInputDiv: Binding[Node] = {
+  private def midiOutputDiv: Binding[Node] = {
     <div class="input-field col s12">
-      { midiInputSelector.bind }
-      <label>MIDI input</label>
+      { midiOutputSelector.bind }
+      <label>MIDI output</label>
     </div>
   }
 
   @dom
   private def layout: Binding[Node] =
     <div>
-      { midiInputDiv.bind }
+      { midiOutputDiv.bind }
       { patchSelectorDiv.bind }
     </div>
 
   private def enableMidi(): Unit =
     WebMidi.enable(sysex = false) { error =>
-      if (error.isEmpty)
+      if (error.isEmpty) {
+        println("MIDI enabled")
         midiEnabledObservable.next(true)
+      }
       else
         println(error.get)
     }

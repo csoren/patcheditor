@@ -3,7 +3,7 @@ package webmidi
 import scala.language.implicitConversions
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
-import scala.scalajs.js.{Array, Error, Function1, UndefOr, |}
+import scala.scalajs.js.{Error, UndefOr, |}
 
 @js.native
 @JSName("WebMidi")
@@ -55,15 +55,15 @@ private[webmidi] object NativeWebMidi extends js.Object {
 }
 
 object WebMidi {
-  def addListener(`type`: PortState.PortState, listener: js.Function1[Event,Unit]): WebMidi.type = {
+  def addListener(`type`: PortState.PortState)(listener: js.Function1[Event,Unit]): WebMidi.type = {
     NativeWebMidi.addListener(`type`.toString, listener)
     WebMidi
   }
 
-  def hasListener(`type`: PortState.PortState, listener: js.Function1[Event,Unit]): Boolean =
+  def hasListener(`type`: PortState.PortState)(listener: js.Function1[Event,Unit]): Boolean =
     NativeWebMidi.hasListener(`type`.toString, listener)
 
-  def removeListener(`type`: PortState.PortState, listener: js.Function1[Event,Unit]): WebMidi.type = {
+  def removeListener(`type`: PortState.PortState)(listener: js.Function1[Event,Unit]): WebMidi.type = {
     NativeWebMidi.removeListener(`type`.toString, listener)
     WebMidi
   }
