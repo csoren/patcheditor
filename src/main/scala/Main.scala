@@ -36,15 +36,14 @@ object Main extends js.JSApp {
       .map(_.sortBy(_.name))
 
   private def categorizedPatches: Future[Map[String, List[OptionValue]]] =
-    allPatches
-      .map {
-        _.toList
-        .zipWithIndex
-        .map { case (patch, index) => OptionValue(index, patch) }
-        .flatMap(v => v.patch.tags.map((_, v)))
-        .groupBy(_._1)
-        .map { case (tag, list) => (tag, list.map(_._2)) }
-        .toMap
+    allPatches.map {
+      _.toList
+      .zipWithIndex
+      .map { case (patch, index) => OptionValue(index, patch) }
+      .flatMap(v => v.patch.tags.map((_, v)))
+      .groupBy(_._1)
+      .map { case (tag, list) => (tag, list.map(_._2)) }
+      .toMap
     }
 
   private def updatePatches(): Unit = {
@@ -87,15 +86,14 @@ object Main extends js.JSApp {
   }
 
   @dom
-  private def midiOutputSelector: Binding[Select] = {
-    val select: Select = <select />
+  private def midiOutputDevice: Binding[Select] = {
+    val select = jsdom.document.createElement("select").asInstanceOf[Select]
     val events =
       midiEnabledObservable.map(_ => ())
         .merge(midiConnectedObservable.map(_ => ()))
         .merge(midiDisconnectedObservable.map(_ => ()))
 
     events.subscribe { _ =>
-      println(s"Updating output list ${WebMidi.outputs}")
       val options = WebMidi.outputs.map { p => mkOption(p.name, p.id) }
       updateOptions(select, options)
     }
@@ -103,18 +101,34 @@ object Main extends js.JSApp {
   }
 
   @dom
+  private def midiOutputChannel: Binding[Select] = {
+    val select = jsdom.document.createElement("select").asInstanceOf[Select]
+    val options = (1 to 16).map(_.toString).map(v => mkOption(v, v))
+    options.foreach(select.appendChild)
+    select
+  }
+
+  @dom
   private def patchSelectorDiv: Binding[Node] = {
-    <div class="input-field col s12">
-      { patchSelector.bind }
-      <label>Patch</label>
+    <div class="row">
+      <div class="input-field col s12 m6 offset-m3">
+        { patchSelector.bind }
+        <label>Patch</label>
+      </div>
     </div>
   }
 
   @dom
   private def midiOutputDiv: Binding[Node] = {
-    <div class="input-field col s12">
-      { midiOutputSelector.bind }
-      <label>MIDI output</label>
+    <div class="row">
+      <div class="input-field col offset-m3 s10 m5">
+        { midiOutputDevice.bind }
+        <label>MIDI output device</label>
+      </div>
+      <div class="input-field col s2 m1">
+        { midiOutputChannel.bind }
+        <label>Channel</label>
+      </div>
     </div>
   }
 
@@ -127,10 +141,8 @@ object Main extends js.JSApp {
 
   private def enableMidi(): Unit =
     WebMidi.enable(sysex = false) { error =>
-      if (error.isEmpty) {
-        println("MIDI enabled")
+      if (error.isEmpty)
         midiEnabledObservable.next(true)
-      }
       else
         println(error.get)
     }
