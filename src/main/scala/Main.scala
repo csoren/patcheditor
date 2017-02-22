@@ -1,5 +1,4 @@
 import com.thoughtworks.binding.{Binding, dom}
-import droid.Patch
 import materialize._
 import org.scalajs.dom.Node
 import org.scalajs.dom.html.{Select, Option => HtmlOption}
@@ -7,17 +6,13 @@ import org.scalajs.jquery.jQuery
 import org.scalajs.{dom => jsdom}
 import rxscalajs.Subject
 import rxscalajs.subjects.ReplaySubject
+import ui._
 import webmidi.{PortState, WebMidi}
 
-import scala.concurrent.Future
-import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js
-import scala.util.{Failure, Success}
+
 
 object Main extends js.JSApp {
-  private case class OptionValue(index: Int, patch: Patch)
-
-  private val patchListObservable: Subject[List[(String, OptionValue)]] = Subject()
 
   private val midiEnabledObservable: Subject[Boolean] = ReplaySubject.withSize(1)
 
@@ -30,34 +25,7 @@ object Main extends js.JSApp {
     WebMidi.addListener(PortState.disconnected) { midiDisconnectedObservable.next }
   }
 
-  private val allPatches: Future[js.Array[Patch]] =
-    droid.Patch
-      .load("droidpatches.json")
-      .map(_.sortBy(_.name))
-
-  private def categorizedPatches: Future[Map[String, List[OptionValue]]] =
-    allPatches.map {
-      _.toList
-      .zipWithIndex
-      .map { case (patch, index) => OptionValue(index, patch) }
-      .flatMap(v => v.patch.tags.map((_, v)))
-      .groupBy(_._1)
-      .map { case (tag, list) => (tag, list.map(_._2)) }
-      .toMap
-    }
-
-  private def updatePatches(): Unit = {
-    categorizedPatches.onComplete {
-      case Success(patches) =>
-        val patchNames =
-          patches.toList
-            .sortBy(_._1)
-            .flatMap { case (tag, patchList) => patchList.map(p => (s"[$tag] ${p.patch.name}", p)) }
-        patchListObservable.next(patchNames)
-      case Failure(str) =>
-        println(str)
-    }
-  }
+  private def mkSelect(): Select = jsdom.document.createElement("select").asInstanceOf[Select]
 
   private def mkOption(text: String, value: String): HtmlOption = {
     val option = jsdom.document.createElement("option").asInstanceOf[HtmlOption]
@@ -66,7 +34,7 @@ object Main extends js.JSApp {
     option
   }
 
-  private def patchOption(text: String, value: OptionValue): HtmlOption =
+  private def patchOption(text: String, value: Patches.OptionValue): HtmlOption =
     mkOption(text, value.index.toString)
 
   private def updateOptions(select: Select, options: Seq[HtmlOption]): Unit =
@@ -75,10 +43,9 @@ object Main extends js.JSApp {
       .append(options:_*)
       .material_select()
 
-  @dom
-  private def patchSelector: Binding[Select] = {
-    val select: Select = <select />
-    patchListObservable.subscribe { (patches: List[(String, OptionValue)]) =>
+  private val patchSelector: Select = {
+    val select = mkSelect()
+    Patches.patchListObservable.subscribe { (patches: List[(String, Patches.OptionValue)]) =>
       val options = patches.map { case (text, value) => patchOption(text, value) }
       updateOptions(select, options)
     }
@@ -87,7 +54,7 @@ object Main extends js.JSApp {
 
   @dom
   private def midiOutputDevice: Binding[Select] = {
-    val select = jsdom.document.createElement("select").asInstanceOf[Select]
+    val select = mkSelect()
     val events =
       midiEnabledObservable.map(_ => ())
         .merge(midiConnectedObservable.map(_ => ()))
@@ -102,7 +69,7 @@ object Main extends js.JSApp {
 
   @dom
   private def midiOutputChannel: Binding[Select] = {
-    val select = jsdom.document.createElement("select").asInstanceOf[Select]
+    val select = <select/>
     val options = (1 to 16).map(_.toString).map(v => mkOption(v, v))
     options.foreach(select.appendChild)
     select
@@ -112,7 +79,7 @@ object Main extends js.JSApp {
   private def patchSelectorDiv: Binding[Node] = {
     <div class="row">
       <div class="input-field col s12 m6 offset-m3">
-        { patchSelector.bind }
+        { patchSelector }
         <label>Patch</label>
       </div>
     </div>
@@ -137,6 +104,7 @@ object Main extends js.JSApp {
     <div>
       { midiOutputDiv.bind }
       { patchSelectorDiv.bind }
+      { patchSelector.selectedIndexVar.bind.toString }
     </div>
 
   private def enableMidi(): Unit =
@@ -150,7 +118,6 @@ object Main extends js.JSApp {
   def main(): Unit = {
     dom.render(jsdom.document.getElementById("playground"), layout)
     jQuery("select").material_select()
-    updatePatches()
     enableMidi()
   }
 }
