@@ -34,9 +34,6 @@ object Main extends js.JSApp {
     option
   }
 
-  private def patchOption(text: String, value: Patches.OptionValue): HtmlOption =
-    mkOption(text, value.index.toString)
-
   private def updateOptions(select: Select, options: Seq[HtmlOption]): Unit =
     jQuery(select)
       .empty()
@@ -45,8 +42,8 @@ object Main extends js.JSApp {
 
   private val patchSelector: Select = {
     val select = mkSelect()
-    Patches.patchListObservable.subscribe { (patches: List[(String, Patches.OptionValue)]) =>
-      val options = patches.map { case (text, value) => patchOption(text, value) }
+    Patches.patchListObservable.subscribe { (patches: List[Patches.OptionValue]) =>
+      val options = patches.map { p => mkOption(s"[${p.tag}] ${p.patch.name}", p.index.toString) }
       updateOptions(select, options)
     }
     select

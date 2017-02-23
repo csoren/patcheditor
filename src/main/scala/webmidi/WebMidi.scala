@@ -68,7 +68,7 @@ object WebMidi {
     WebMidi
   }
 
-  val disable: () => Unit = NativeWebMidi.disable
+  val disable: () => Unit = NativeWebMidi.disable _
 
   def enable(sysex: Boolean)(callback: js.Function1[UndefOr[Error], Unit]): Unit =
     NativeWebMidi.enable(callback, sysex)

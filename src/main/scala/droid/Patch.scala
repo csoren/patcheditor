@@ -1,18 +1,15 @@
 package droid
 
-import droid.Patch.MatrixControlledValue
-import droid.Waveform.Waveform
 import org.scalajs.dom.ext.Ajax
 
 import scala.concurrent.Future
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
-import scala.scalajs.js.|
 
 
-object MatrixController extends Enumeration {
-  type MatrixController = Value
+object MatrixControllerType extends Enumeration {
+  type MatrixControllerType = Value
 
   val En1 = Value(0)
   val En2 = Value(1)
@@ -68,6 +65,13 @@ object TuningMode extends Enumeration {
 
 
 @js.native
+trait MatrixControlledWaveform extends js.Any
+
+@js.native
+trait MatrixControlledValue extends js.Any
+
+
+@js.native
 trait WaveformDistortion extends js.Object {
   @JSName("waveform")
   private[droid] val _waveform: String = js.native
@@ -118,40 +122,41 @@ trait Patch extends js.Object {
   val mixingStructure: Int = js.native
 }
 
-object Patch {
-  type MatrixControlledValue = Any
-  type MatrixControlledWaveform = Any
 
-  implicit final class MatrixControlledValueExt(val controlledValue: MatrixControlledValue) {
-    def matrixController: Option[MatrixController.MatrixController] =
-      controlledValue match {
-        case s: String => Some(MatrixController.withName(s))
+object Patch {
+  object MatrixController {
+    def unapply(value: MatrixControlledValue): Option[MatrixControllerType.MatrixControllerType] =
+      value.asInstanceOf[Any] match {
+        case s: String => Some(MatrixControllerType.withName(s))
         case _ => None
       }
 
-    def value: Option[Int] =
-      controlledValue match {
-        case n: Int => Some(n)
+    def unapply(value: MatrixControlledWaveform): Option[MatrixControllerType.MatrixControllerType] =
+      value.asInstanceOf[Any] match {
+        case s: String => Some(MatrixControllerType.withName(s))
         case _ => None
       }
   }
 
-  implicit final class MatrixControlledWaveformExt(val controlledValue: MatrixControlledWaveform) {
-    def matrixController: Option[MatrixController.MatrixController] =
-      controlledValue match {
-        case s: String => Some(MatrixController.withName(s))
+  object ConstantValue {
+    def unapply(value: MatrixControlledValue): Option[Int] = {
+      value.asInstanceOf[Any] match {
+        case n: Int => Some(n)
         case _ => None
       }
+    }
+  }
 
-    def value: Option[WaveformDistortion] =
-      controlledValue match {
+  object Waveform {
+    def unapply(value: MatrixControlledWaveform): Option[WaveformDistortion] =
+      value.asInstanceOf[Any] match {
         case _: String => None
         case waveform => Some(waveform.asInstanceOf[WaveformDistortion])
       }
   }
 
   implicit final class WaveformDistortionExt(val value: WaveformDistortion) {
-    def waveform: Waveform.Waveform = Waveform.withName(value._waveform)
+    def waveform: droid.Waveform.Waveform = droid.Waveform.withName(value._waveform)
     def distortion: Distortion.Distortion = Distortion.withName(value._distortion)
   }
 
