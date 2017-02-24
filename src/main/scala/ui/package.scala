@@ -1,8 +1,8 @@
 import com.thoughtworks.binding.Binding.Var
 import org.scalajs.dom.html.{Element, Select}
 import org.scalajs.jquery.{JQueryEventObject, jQuery}
+import rxscalajs.Observable
 import rxscalajs.subjects.ReplaySubject
-import rxscalajs.{Observable, Subject}
 
 package object ui {
   implicit final class ElementExt(val element: Element) {

@@ -1,6 +1,6 @@
 import com.thoughtworks.binding.Binding.Var
 import com.thoughtworks.binding.{Binding, dom}
-import droid.{ControlChange, ControlChanges}
+import droid.{ControlChange, ControlChangeMode, ControlChanges}
 import materialize._
 import org.scalajs.dom.Node
 import org.scalajs.dom.html.{Select, Option => HtmlOption}
@@ -10,23 +10,12 @@ import rxscalajs.{Observable, Subject}
 import rxscalajs.subjects.ReplaySubject
 import reactive._
 import ui._
-import webmidi.{PortState, WebMidi}
+import webmidi._
 
 import scala.scalajs.js
 
 
 object Main extends js.JSApp {
-
-  private val midiEnabledObservable: Subject[Boolean] = ReplaySubject.withSize(1)
-
-  private val midiConnectedObservable: Subject[webmidi.Event] = Subject()
-
-  private val midiDisconnectedObservable: Subject[webmidi.Event] = Subject()
-
-  midiEnabledObservable.filter(_ == true).subscribe { _ =>
-    WebMidi.addListener(PortState.connected) { midiConnectedObservable.next }
-    WebMidi.addListener(PortState.disconnected) { midiDisconnectedObservable.next }
-  }
 
   private def mkSelect(): Select = jsdom.document.createElement("select").asInstanceOf[Select]
 
@@ -41,6 +30,7 @@ object Main extends js.JSApp {
     jQuery(select)
       .empty()
       .append(options:_*)
+      .change()
       .material_select()
 
   private val patchSelector: Select = {
@@ -48,33 +38,37 @@ object Main extends js.JSApp {
     Patches.patchListObservable.subscribe { (patches: List[Patches.OptionValue]) =>
       val options = patches.map { p => mkOption(s"[${p.category}] ${p.patch.name}", p.index.toString) }
       updateOptions(select, options)
-      select.selectedIndex = 0
     }
     select
   }
 
-  @dom
-  private def midiOutputDevice: Binding[Select] = {
-    val select = mkSelect()
-    val events =
-      midiEnabledObservable.map(_ => ())
-        .merge(midiConnectedObservable.map(_ => ()))
-        .merge(midiDisconnectedObservable.map(_ => ()))
+  private val midiPortsChangedObservable =
+    Midi.enabledObservable.map(_ => ())
+      .merge(Midi.connectedObservable.map(_ => ()))
+      .merge(Midi.disconnectedObservable.map(_ => ()))
 
-    events.subscribe { _ =>
+  private val midiOutputDevice: Select = {
+    val select = mkSelect()
+
+    midiPortsChangedObservable.subscribe { _ =>
       val options = WebMidi.outputs.map { p => mkOption(p.name, p.id) }
       updateOptions(select, options)
     }
     select
   }
 
-  @dom
-  private def midiOutputChannel: Binding[Select] = {
-    val select = <select/>
+  private val selectedMidiOutputDevice: Observable[Output] =
+    midiOutputDevice.selectedIndexObservable.map(n => WebMidi.outputs(n))
+
+  private val midiOutputChannel: Select = {
+    val select = mkSelect()
     val options = (1 to 16).map(_.toString).map(v => mkOption(v, v))
     options.foreach(select.appendChild)
     select
   }
+
+  private val selectedMidiOutputChannel: Observable[Channel] =
+    midiOutputChannel.selectedIndexObservable.map(n => Single(n+1))
 
   @dom
   private def patchSelectorDiv: Binding[Node] = {
@@ -90,41 +84,53 @@ object Main extends js.JSApp {
   private def midiOutputDiv: Binding[Node] = {
     <div class="row">
       <div class="input-field col offset-m3 s10 m5">
-        { midiOutputDevice.bind }
+        { midiOutputDevice }
         <label>MIDI output device</label>
       </div>
       <div class="input-field col s2 m1">
-        { midiOutputChannel.bind }
+        { midiOutputChannel }
         <label>Channel</label>
       </div>
     </div>
   }
 
-  private val patchControlChanges: Var[Seq[ControlChange]] =
+  private def asControllerValuePair(mode: ControlChangeMode.ControlChangeMode): (Int, Int) =
+    (16, mode.id)
+
+  private def asControllerValuePairs(controlChanges: (ControlChangeMode.ControlChangeMode, Seq[ControlChange])): Seq[(Int, Int)] =
+    asControllerValuePair(controlChanges._1) +: controlChanges._2.map(v => (v.control, v.value))
+
+  private def asControllerValuePairs(controlChanges: Seq[ControlChange]): Seq[(Int, Int)] =
+    controlChanges
+      .groupBy(_.mode)
+      .toSeq
+      .flatMap(asControllerValuePairs) :+
+      asControllerValuePair(ControlChangeMode.double)
+
+  private val patchControlChanges: Observable[Seq[(Int,Int)]] =
     patchSelector.selectedIndexObservable.filter(_ >= 0)
+      .map(n => patchSelector.options(n).value.toInt)
       .combineLatestWith(Patches.patchArrayObservable) { (index, patches) => patches(index) }
       .map(ControlChanges.asControlChanges)
-      .toVar(Seq.empty)
+      .map(asControllerValuePairs)
 
   @dom
   private def layout: Binding[Node] =
     <div>
       { midiOutputDiv.bind }
       { patchSelectorDiv.bind }
-      { patchControlChanges.bind.mkString(",") }
     </div>
 
-  private def enableMidi(): Unit =
-    WebMidi.enable(sysex = false) { error =>
-      if (error.isEmpty)
-        midiEnabledObservable.next(true)
-      else
-        println(error.get)
-    }
+  private def transmitControlChanges(midiPort: Output, channel: Channel, controlChanges: Seq[(Int, Int)]): Unit =
+    controlChanges.foreach { case (control, value) => midiPort.sendControlChange(control, value, channel) }
 
   def main(): Unit = {
     dom.render(jsdom.document.getElementById("playground"), layout)
     jQuery("select").material_select()
-    enableMidi()
+    Midi.enable()
+
+    selectedMidiOutputDevice.combineLatest(selectedMidiOutputChannel, patchControlChanges)
+      .debugLog("combined")
+      .subscribe { tuple => transmitControlChanges(tuple._1, tuple._2, tuple._3) }
   }
 }

@@ -16,3 +16,10 @@ class Input extends js.Object {
   private[webmidi] val _state: String = js.native
 }
 
+
+object Input {
+  implicit final class InputExt(val input: Input) {
+    def connection: PortStatus.PortStatus = PortStatus.withName(input._connection)
+    def state: PortState.PortState = PortState.withName(input._state)
+  }
+}

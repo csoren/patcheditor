@@ -16,3 +16,9 @@ trait Event extends js.Object {
   val input: js.UndefOr[Input] = js.native
 }
 
+
+object Event {
+  implicit final class EventExt(val event: Event) {
+    def eventType: PortState.PortState = PortState.withName(event._type)
+  }
+}

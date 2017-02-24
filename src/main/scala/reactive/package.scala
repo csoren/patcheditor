@@ -12,7 +12,7 @@ package object reactive {
       v
     }
 
-    def forEach(fn: T => _): Observable[T] =
+    def foreach(fn: T => _): Observable[T] =
       observable.map(v => { fn(v); v })
 
     def debugLog(name: String): Observable[T] =
