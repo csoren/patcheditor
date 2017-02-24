@@ -88,7 +88,7 @@ trait DCO extends js.Object {
   val frequency: MatrixControlledValue = js.native
   val offset: MatrixControlledValue = js.native
   val pulseWidth: MatrixControlledValue = js.native
-  val waveform: MatrixControlledValue = js.native
+  val waveform: MatrixControlledWaveform = js.native
 
   @JSName("tuningMode")
   private[droid] val _tuningMode: String = js.native
@@ -125,17 +125,19 @@ trait Patch extends js.Object {
 
 object Patch {
   object MatrixController {
-    def unapply(value: MatrixControlledValue): Option[MatrixControllerType.MatrixControllerType] =
+    def unapply(value: MatrixControlledValue): Option[MatrixControllerType.MatrixControllerType] = {
       value.asInstanceOf[Any] match {
         case s: String => Some(MatrixControllerType.withName(s))
         case _ => None
       }
+    }
 
-    def unapply(value: MatrixControlledWaveform): Option[MatrixControllerType.MatrixControllerType] =
+    def unapply(value: MatrixControlledWaveform): Option[MatrixControllerType.MatrixControllerType] = {
       value.asInstanceOf[Any] match {
         case s: String => Some(MatrixControllerType.withName(s))
         case _ => None
       }
+    }
   }
 
   object ConstantValue {
@@ -148,11 +150,12 @@ object Patch {
   }
 
   object Waveform {
-    def unapply(value: MatrixControlledWaveform): Option[WaveformDistortion] =
+    def unapply(value: MatrixControlledWaveform): Option[WaveformDistortion] = {
       value.asInstanceOf[Any] match {
-        case _: String => None
-        case waveform => Some(waveform.asInstanceOf[WaveformDistortion])
+        case waveform: js.Object => Some(waveform.asInstanceOf[WaveformDistortion])
+        case _ => None
       }
+    }
   }
 
   implicit final class WaveformDistortionExt(val value: WaveformDistortion) {

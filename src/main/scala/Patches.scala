@@ -1,4 +1,5 @@
 import droid.Patch
+import rxscalajs.subjects.ReplaySubject
 import rxscalajs.{Observable, Subject}
 
 import scala.concurrent.Future
@@ -8,19 +9,19 @@ import scala.util.{Failure, Success}
 
 
 object Patches {
-  case class OptionValue(index: Int, tag: String, patch: Patch) extends Ordered[OptionValue] {
+  case class OptionValue(index: Int, category: String, patch: Patch) extends Ordered[OptionValue] {
     override def compare(that: OptionValue): Int =
-      this.tag.compare(that.tag) match {
+      this.category.compare(that.category) match {
         case 0 => patch.name.compare(that.patch.name)
         case t => t
       }
   }
 
-  private val _patchArraySubject: Subject[js.Array[Patch]] = Subject()
+  private val _patchArraySubject: Subject[js.Array[Patch]] = ReplaySubject.withSize(1)
 
-  val patchArrayObservable: Observable[js.Array[Patch]] = _patchArraySubject
+  def patchArrayObservable: Observable[js.Array[Patch]] = _patchArraySubject
 
-  val patchListObservable: Observable[List[OptionValue]] =
+  def patchListObservable: Observable[List[OptionValue]] =
     _patchArraySubject.map {
       _.toList
       .zipWithIndex

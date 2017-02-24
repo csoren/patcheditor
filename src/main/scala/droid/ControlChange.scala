@@ -29,6 +29,15 @@ object ControlChanges {
   private def asControlChanges(controller: MatrixControllerType.MatrixControllerType, cc: Int): ControlChange =
     ControlChange(ControlChangeMode.matrixController, cc, controller.id)
 
+  private def asControlChanges(value: WaveformDistortion, cc: Int): ControlChange =
+    asControlChanges((value.distortion.id << 3) | value.waveform.id, cc)
+
+  private def asControlChanges(controlledValue: MatrixControlledWaveform, cc: Int): ControlChange =
+    controlledValue match {
+      case MatrixController(controller) => asControlChanges(controller, cc)
+      case Waveform(wave) => asControlChanges(wave, cc)
+    }
+
   private def asControlChanges(controlledValue: MatrixControlledValue, cc: Int): ControlChange =
     controlledValue match {
       case MatrixController(controller) => asControlChanges(controller, cc)

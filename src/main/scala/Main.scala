@@ -1,11 +1,14 @@
+import com.thoughtworks.binding.Binding.Var
 import com.thoughtworks.binding.{Binding, dom}
+import droid.{ControlChange, ControlChanges}
 import materialize._
 import org.scalajs.dom.Node
 import org.scalajs.dom.html.{Select, Option => HtmlOption}
 import org.scalajs.jquery.jQuery
 import org.scalajs.{dom => jsdom}
-import rxscalajs.Subject
+import rxscalajs.{Observable, Subject}
 import rxscalajs.subjects.ReplaySubject
+import reactive._
 import ui._
 import webmidi.{PortState, WebMidi}
 
@@ -43,8 +46,9 @@ object Main extends js.JSApp {
   private val patchSelector: Select = {
     val select = mkSelect()
     Patches.patchListObservable.subscribe { (patches: List[Patches.OptionValue]) =>
-      val options = patches.map { p => mkOption(s"[${p.tag}] ${p.patch.name}", p.index.toString) }
+      val options = patches.map { p => mkOption(s"[${p.category}] ${p.patch.name}", p.index.toString) }
       updateOptions(select, options)
+      select.selectedIndex = 0
     }
     select
   }
@@ -96,12 +100,18 @@ object Main extends js.JSApp {
     </div>
   }
 
+  private val patchControlChanges: Var[Seq[ControlChange]] =
+    patchSelector.selectedIndexObservable.filter(_ >= 0)
+      .combineLatestWith(Patches.patchArrayObservable) { (index, patches) => patches(index) }
+      .map(ControlChanges.asControlChanges)
+      .toVar(Seq.empty)
+
   @dom
   private def layout: Binding[Node] =
     <div>
       { midiOutputDiv.bind }
       { patchSelectorDiv.bind }
-      { patchSelector.selectedIndexVar.bind.toString }
+      { patchControlChanges.bind.mkString(",") }
     </div>
 
   private def enableMidi(): Unit =
