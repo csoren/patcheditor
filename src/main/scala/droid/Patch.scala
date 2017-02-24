@@ -6,7 +6,6 @@ import scala.concurrent.Future
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
-import scala.scalajs.js.|
 
 
 object MatrixControllerType extends Enumeration {
@@ -66,10 +65,10 @@ object TuningMode extends Enumeration {
 
 
 @js.native
-trait MatrixControlledWaveform extends js.Any
+trait MatrixControllableWaveform extends js.Any
 
 @js.native
-trait MatrixControlledValue extends js.Any
+trait MatrixControllableValue extends js.Any
 
 
 @js.native
@@ -85,11 +84,11 @@ trait WaveformDistortion extends js.Object {
 @js.native
 trait DCO extends js.Object {
   val octave: Int = js.native
-  val amplitude: MatrixControlledValue = js.native
-  val frequency: MatrixControlledValue = js.native
-  val offset: MatrixControlledValue = js.native
-  val pulseWidth: MatrixControlledValue = js.native
-  val waveform: MatrixControlledWaveform = js.native
+  val amplitude: MatrixControllableValue = js.native
+  val frequency: MatrixControllableValue = js.native
+  val offset: MatrixControllableValue = js.native
+  val pulseWidth: MatrixControllableValue = js.native
+  val waveform: MatrixControllableWaveform = js.native
 
   @JSName("tuningMode")
   private[droid] val _tuningMode: String = js.native
@@ -102,7 +101,7 @@ trait Envelope extends js.Object {
   val attackLevel: Int = js.native
   val release: Int = js.native
   val sustain: Int = js.native
-  val offset: MatrixControlledValue = js.native
+  val offset: MatrixControllableValue = js.native
 }
 
 @js.native
@@ -116,9 +115,9 @@ trait Patch extends js.Object {
   val env1: Envelope = js.native
   val env2: Envelope = js.native
   val dco2Env2Step: Int = js.native
-  val arpeggio: MatrixControlledValue = js.native
-  val filterFrequency1: MatrixControlledValue = js.native
-  val filterWidthFrequency2: MatrixControlledValue = js.native
+  val arpeggio: MatrixControllableValue = js.native
+  val filterFrequency1: MatrixControllableValue = js.native
+  val filterWidthFrequency2: MatrixControllableValue = js.native
   val variousModes: Int = js.native
   val mixingStructure: Int = js.native
 }
@@ -126,36 +125,32 @@ trait Patch extends js.Object {
 
 object Patch {
   object MatrixController {
-    def unapply(value: MatrixControlledValue): Option[MatrixControllerType.MatrixControllerType] = {
+    def unapply(value: MatrixControllableValue): Option[MatrixControllerType.MatrixControllerType] =
       value.asInstanceOf[Any] match {
         case s: String => Some(MatrixControllerType.withName(s))
         case _ => None
       }
-    }
 
-    def unapply(value: MatrixControlledWaveform): Option[MatrixControllerType.MatrixControllerType] = {
+    def unapply(value: MatrixControllableWaveform): Option[MatrixControllerType.MatrixControllerType] =
       value.asInstanceOf[Any] match {
         case s: String => Some(MatrixControllerType.withName(s))
         case _ => None
       }
-    }
   }
 
   object ConstantValue {
-    def unapply(value: MatrixControlledValue): Option[Int] = {
+    def unapply(value: MatrixControllableValue): Option[Int] =
       value.asInstanceOf[Any] match {
         case n: Int => Some(n)
         case _ => None
       }
-    }
   }
 
   object Waveform {
-    def unapply(value: MatrixControlledWaveform): Option[WaveformDistortion] = {
+    def unapply(value: MatrixControllableWaveform): Option[WaveformDistortion] =
       value.asInstanceOf[Any] match {
         case waveform: js.Object => Some(waveform.asInstanceOf[WaveformDistortion])
         case _ => None
-      }
     }
   }
 

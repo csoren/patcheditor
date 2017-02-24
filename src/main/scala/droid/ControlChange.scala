@@ -32,13 +32,13 @@ object ControlChanges {
   private def asControlChanges(value: WaveformDistortion, cc: Int): ControlChange =
     asControlChanges((value.distortion.id << 3) | value.waveform.id, cc)
 
-  private def asControlChanges(controlledValue: MatrixControlledWaveform, cc: Int): ControlChange =
+  private def asControlChanges(controlledValue: MatrixControllableWaveform, cc: Int): ControlChange =
     controlledValue match {
       case MatrixController(controller) => asControlChanges(controller, cc)
       case Waveform(wave) => asControlChanges(wave, cc)
     }
 
-  private def asControlChanges(controlledValue: MatrixControlledValue, cc: Int): ControlChange =
+  private def asControlChanges(controlledValue: MatrixControllableValue, cc: Int): ControlChange =
     controlledValue match {
       case MatrixController(controller) => asControlChanges(controller, cc)
       case ConstantValue(value) => asControlChanges(value, cc)
@@ -77,5 +77,18 @@ object ControlChanges {
     asControlChanges(value.dco2, 102) ++
     asControlChanges(value.env1, 108) ++
     asControlChanges(value.env2, 114)
+
+  private def asControllerValuePair(mode: ControlChangeMode.ControlChangeMode): (Int, Int) =
+    (16, mode.id)
+
+  private def asControlValuePairs(controlChanges: (ControlChangeMode.ControlChangeMode, Seq[ControlChange])): Seq[(Int, Int)] =
+    asControllerValuePair(controlChanges._1) +: controlChanges._2.map(v => (v.control, v.value))
+
+  def asControlValuePairs(controlChanges: Seq[ControlChange]): Seq[(Int, Int)] =
+    controlChanges
+      .groupBy(_.mode)
+      .toSeq
+      .flatMap(asControlValuePairs) :+
+      asControllerValuePair(ControlChangeMode.double)
 
 }

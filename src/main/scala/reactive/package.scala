@@ -1,8 +1,8 @@
 import com.thoughtworks.binding.Binding.Var
+import org.scalajs.{dom => jsdom}
 import rxscalajs.{Observable, Observer}
 
 import scala.scalajs.js
-import org.scalajs.{dom => jsdom}
 
 package object reactive {
   implicit final class ObservableExt[T](val observable: Observable[T]) {
