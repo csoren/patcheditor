@@ -1,6 +1,7 @@
 package ui
 
 import com.thoughtworks.binding.{Binding, dom}
+import materialize._
 import midi.webmidi.{Channel, Output, Single}
 import org.scalajs.dom.Node
 import org.scalajs.dom.html.Select

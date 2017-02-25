@@ -31,19 +31,11 @@ package object ui {
     }
   }
 
-  implicit final class SelectExt(val select: Select) {
+  implicit final class UiSelectExt(val select: Select) {
     def selectedIndexObservable: Observable[Int] =
       select.eventAsObservable("change", select.selectedIndex)
 
     def selectedIndexVar: Var[Int] =
       select.eventAsVar("change", select.selectedIndex)
-
-    def setMaterialOptions(options: Seq[HtmlOption]): Unit =
-      jQuery(select)
-        .empty()
-        .append(options:_*)
-        .change()
-        .material_select()
-
   }
 }

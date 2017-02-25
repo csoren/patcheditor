@@ -2,11 +2,9 @@ package ui
 
 import com.thoughtworks.binding.{Binding, dom}
 import droid.Patches
+import materialize._
 import org.scalajs.dom.Node
-import org.scalajs.dom.html.{Select, Option => HtmlOption}
-import org.scalajs.{dom => jsdom}
 import rxscalajs.Observable
-import midi.webmidi.{Channel, Output, Single}
 
 class Editor() {
 
