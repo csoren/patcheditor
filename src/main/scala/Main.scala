@@ -15,11 +15,10 @@ object Main extends js.JSApp {
     val midiView = new ui.Midi()
     dom.render(jsdom.document.getElementById("midi"), midiView.layout)
 
+    val presenter = new MainPresenter(editorView, midiView)
+
     jQuery("select").material_select()
     jQuery(".button-collapse").sideNav()
-
-    val editorPresenter = new EditorPresenter(editorView)
-    val midiPresenter = new MidiPresenter(midiView)
 
     midi.enable()
   }
