@@ -17,7 +17,26 @@
 
 <body>
 
-<div class="container" id="playground"></div>
+<nav class="nav-extended">
+    <div class="nav-wrapper">
+        <a href="#" class="brand-logo">&nbsp;Patch editor</a>
+        <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a href="https://github.com/csoren/patcheditor">GitHub</a></li>
+        </ul>
+        <ul class="side-nav" id="mobile-demo">
+            <li><a href="https://github.com/csoren/patcheditor">GitHub</a></li>
+        </ul>
+    </div>
+    <div class="nav-content">
+        <ul class="tabs tabs-transparent">
+            <li class="tab"><a class="active" href="#editor">Editor</a></li>
+            <li class="tab"><a href="#midi">MIDI</a></li>
+        </ul>
+    </div>
+</nav>
+<div id="editor" class="col s12"></div>
+<div id="midi" class="col s12"></div>
 
 <script type="text/javascript" src="./target/scala-2.12/patcheditor-jsdeps.js"></script>
 <script type="text/javascript" src="./target/scala-2.12/patcheditor-fastopt.js"></script>

@@ -1,12 +1,13 @@
-import droid.ControlChanges
+import droid.{ControlChanges, Patches}
 import rxscalajs.Observable
-import webmidi.{Channel, Output, WebMidi}
+import ui.Editor
+import midi.webmidi.{Channel, Output, WebMidi}
 
-class Presenter(view: View) {
+class EditorPresenter(view: Editor) {
   private val midiPortsChangedObservable =
-    Midi.enabledObservable.map(_ => ())
-      .merge(Midi.connectedObservable.map(_ => ()))
-      .merge(Midi.disconnectedObservable.map(_ => ()))
+    midi.enabledObservable.map(_ => ())
+      .merge(midi.connectedObservable.map(_ => ()))
+      .merge(midi.disconnectedObservable.map(_ => ()))
 
   private val midiPortsObservable =
     midiPortsChangedObservable.map(_ => WebMidi.outputs)

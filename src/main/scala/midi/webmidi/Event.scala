@@ -1,4 +1,4 @@
-package webmidi
+package midi.webmidi
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName

@@ -1,4 +1,4 @@
-package webmidi
+package midi.webmidi
 
 import scala.language.implicitConversions
 import scala.scalajs.js

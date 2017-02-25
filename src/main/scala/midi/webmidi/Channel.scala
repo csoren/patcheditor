@@ -1,4 +1,4 @@
-package webmidi
+package midi.webmidi
 
 sealed trait Channel
 

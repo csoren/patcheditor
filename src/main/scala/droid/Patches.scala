@@ -1,4 +1,5 @@
-import droid.Patch
+package droid
+
 import rxscalajs.subjects.ReplaySubject
 import rxscalajs.{Observable, Subject}
 

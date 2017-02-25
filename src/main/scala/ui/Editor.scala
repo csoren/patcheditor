@@ -1,12 +1,14 @@
+package ui
+
 import com.thoughtworks.binding.{Binding, dom}
+import droid.Patches
 import org.scalajs.dom.Node
 import org.scalajs.dom.html.{Select, Option => HtmlOption}
 import org.scalajs.{dom => jsdom}
 import rxscalajs.Observable
-import ui._
-import webmidi.{Channel, Output, Single, WebMidi}
+import midi.webmidi.{Channel, Output, Single}
 
-class View() {
+class Editor() {
 
   private var _outputPorts: IndexedSeq[Output] = IndexedSeq.empty
 

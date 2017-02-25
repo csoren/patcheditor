@@ -1,4 +1,4 @@
-package webmidi
+package midi.webmidi
 
 object PortState extends Enumeration {
   type PortState = Value

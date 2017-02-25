@@ -9,12 +9,18 @@ import scala.scalajs.js
 object Main extends js.JSApp {
 
   def main(): Unit = {
-    val view = new View()
-    dom.render(jsdom.document.getElementById("playground"), view.layout)
+    val editorView = new ui.Editor()
+    dom.render(jsdom.document.getElementById("editor"), editorView.layout)
+
+    val midiView = new ui.Midi()
+    dom.render(jsdom.document.getElementById("midi"), midiView.layout)
+
     jQuery("select").material_select()
+    jQuery(".button-collapse").sideNav()
 
-    val presenter = new Presenter(view)
+    val editorPresenter = new EditorPresenter(editorView)
+    val midiPresenter = new MidiPresenter(midiView)
 
-    Midi.enable()
+    midi.enable()
   }
 }
