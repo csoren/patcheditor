@@ -8,12 +8,17 @@ class MidiPresenter(view: Midi) {
       .merge(midi.connectedObservable.map(_ => ()))
       .merge(midi.disconnectedObservable.map(_ => ()))
 
-  private val midiPortsObservable =
+  private val midiOutputPortsObservable =
     midiPortsChangedObservable.map(_ => WebMidi.outputs)
 
-  midiPortsObservable.subscribe(view.setOutput(_))
+  private val midiInputPortsObservable =
+    midiPortsChangedObservable.map(_ => WebMidi.inputs)
 
   val selectedMidiOutput: Observable[(Output,Channel)] =
-    view.selectedMidiOutputDevice.combineLatest(view.selectedMidiOutputChannel)
+    view.selectedOutput
+
+  midiOutputPortsObservable.subscribe(view.setOutput(_))
+
+  midiInputPortsObservable.subscribe(view.setInput(_))
 
 }

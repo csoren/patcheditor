@@ -12,16 +12,7 @@ class Options(time: js.UndefOr[Long] = js.undefined) extends js.Object
 
 @js.native
 @JSName("Output")
-class Output extends js.Object {
-  val id: String = js.native
-  val manufacturer: String = js.native
-  val name: String = js.native
-
-  @JSName("connection")
-  private[webmidi] val _connection: String = js.native
-  @JSName("state")
-  private[webmidi] val _state: String = js.native
-
+class Output extends Port {
   @JSName("sendControlChange")
   private[webmidi] def _sendControlChange(controller: Int | String, value: js.UndefOr[Int] = js.undefined, channel: js.UndefOr[Int | String] = js.undefined, options: js.UndefOr[Options] = js.undefined): Output = js.native
 }

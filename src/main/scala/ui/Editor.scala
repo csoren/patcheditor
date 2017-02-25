@@ -8,7 +8,7 @@ import rxscalajs.Observable
 
 class Editor() {
 
-  private val patchSelector = mkSelect()
+  private val patchSelector = mkSelect
 
   @dom
   private def patchSelectorDiv: Binding[Node] = {

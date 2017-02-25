@@ -7,7 +7,7 @@ import rxscalajs.Observable
 import rxscalajs.subjects.ReplaySubject
 
 package object ui {
-  def mkSelect(): Select = jsdom.document.createElement("select").asInstanceOf[Select]
+  def mkSelect: Select = jsdom.document.createElement("select").asInstanceOf[Select]
 
   def mkOption(text: String, value: String): HtmlOption = {
     val option = jsdom.document.createElement("option").asInstanceOf[HtmlOption]
@@ -37,5 +37,8 @@ package object ui {
 
     def selectedIndexVar: Var[Int] =
       select.eventAsVar("change", select.selectedIndex)
+
+    def selectedValueObservable: Observable[String] =
+      selectedIndexObservable.map(select.options).map(_.value)
   }
 }
