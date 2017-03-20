@@ -107,7 +107,10 @@ trait Envelope extends js.Object {
 @js.native
 trait Patch extends js.Object {
   val name: String = js.native
-  val tags: js.Array[String] = js.native
+
+  @JSName("tags")
+  private[droid] val _tags: js.Array[String] = js.native
+
   val author: String = js.native
   val comment: String = js.native
   val dco1: DCO = js.native
@@ -124,6 +127,14 @@ trait Patch extends js.Object {
 
 
 object Patch {
+  implicit final class PatchExt(val patch: Patch) extends AnyVal {
+    def tags: js.Array[String] =
+      if (patch._tags.length == 0)
+        js.Array("Generic")
+      else
+        patch._tags
+  }
+
   object MatrixController {
     def unapply(value: MatrixControllableValue): Option[MatrixControllerType.MatrixControllerType] =
       value.asInstanceOf[Any] match {

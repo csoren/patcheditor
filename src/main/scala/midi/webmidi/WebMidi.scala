@@ -8,11 +8,11 @@ import scala.scalajs.js.{Error, UndefOr, |}
 @js.native
 @JSName("WebMidi")
 private[webmidi] object NativeWebMidi extends js.Object {
-  def addListener(`type`: String, listener: js.Function1[Event, Unit]): NativeWebMidi.type = js.native
+  def addListener(`type`: String, listener: js.Function1[PortEvent, Unit]): NativeWebMidi.type = js.native
 
-  def removeListener(`type`: String, listener: js.Function1[Event, Unit]): NativeWebMidi.type = js.native
+  def removeListener(`type`: String, listener: js.Function1[PortEvent, Unit]): NativeWebMidi.type = js.native
 
-  def hasListener(`type`: String, listener: js.Function1[Event, Unit]): Boolean = js.native
+  def hasListener(`type`: String, listener: js.Function1[PortEvent, Unit]): Boolean = js.native
 
   def disable(): Unit = js.native
 
@@ -55,15 +55,15 @@ private[webmidi] object NativeWebMidi extends js.Object {
 }
 
 object WebMidi {
-  def addListener(`type`: PortState.PortState)(listener: js.Function1[Event,Unit]): WebMidi.type = {
+  def addListener(`type`: PortState.PortState)(listener: js.Function1[PortEvent,Unit]): WebMidi.type = {
     NativeWebMidi.addListener(`type`.toString, listener)
     WebMidi
   }
 
-  def hasListener(`type`: PortState.PortState)(listener: js.Function1[Event,Unit]): Boolean =
+  def hasListener(`type`: PortState.PortState)(listener: js.Function1[PortEvent,Unit]): Boolean =
     NativeWebMidi.hasListener(`type`.toString, listener)
 
-  def removeListener(`type`: PortState.PortState)(listener: js.Function1[Event,Unit]): WebMidi.type = {
+  def removeListener(`type`: PortState.PortState)(listener: js.Function1[PortEvent,Unit]): WebMidi.type = {
     NativeWebMidi.removeListener(`type`.toString, listener)
     WebMidi
   }

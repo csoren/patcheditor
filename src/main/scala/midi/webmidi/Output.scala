@@ -22,15 +22,9 @@ object Output {
   private def asJs(time: Option[Long]): js.UndefOr[Options] =
     time.fold[js.UndefOr[Options]](js.undefined)(t => js.defined(new Options(time = t)))
 
-  private def asJs(channel: Channel): Int | String =
-    channel match {
-      case All() => "all"
-      case Single(n) => n
-    }
-
   implicit final class OutputExt(val output: Output) {
     def sendControlChange(controller: Int, value: Int = 0, channel: Channel = All(), time: Option[Long] = None): Output = {
-      output._sendControlChange(controller, value, asJs(channel), asJs(time))
+      output._sendControlChange(controller, value, channel.asJs, asJs(time))
     }
   }
 }

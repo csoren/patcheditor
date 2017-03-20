@@ -4,7 +4,7 @@ import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
 
 @js.native
-trait Event extends js.Object {
+trait PortEvent extends js.Object {
   @JSName("type")
   private[webmidi] val _type: String = js.native
 
@@ -17,8 +17,8 @@ trait Event extends js.Object {
 }
 
 
-object Event {
-  implicit final class EventExt(val event: Event) {
+object PortEvent {
+  implicit final class PortEventExt(val event: PortEvent) {
     def eventType: PortState.PortState = PortState.withName(event._type)
   }
 }
