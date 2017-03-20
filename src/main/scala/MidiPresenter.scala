@@ -1,4 +1,4 @@
-import midi.webmidi.{Channel, Output, WebMidi}
+import midi.webmidi.{Channel, Input, Output, WebMidi}
 import rxscalajs.Observable
 import ui.Midi
 
@@ -16,6 +16,9 @@ class MidiPresenter(view: Midi) {
 
   val selectedMidiOutput: Observable[(Output,Channel)] =
     view.selectedOutput
+
+  val selectedMidiInput: Observable[(Input,Channel)] =
+    view.selectedInput
 
   midiOutputPortsObservable.subscribe(view.setOutput(_))
 

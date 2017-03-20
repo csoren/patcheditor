@@ -16,4 +16,7 @@ class MainPresenter(editorView: ui.Editor, midiView: ui.Midi) {
 
   transmitPatch.subscribe { (transmitControlChanges _).tupled }
 
+  midiPresenter.selectedMidiInput
+    .
+
 }
