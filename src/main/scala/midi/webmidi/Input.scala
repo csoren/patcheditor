@@ -2,23 +2,29 @@ package midi.webmidi
 
 import rxscalajs.Observable
 
+import scala.language.implicitConversions
 import scala.scalajs.js
-import scala.scalajs.js.annotation.JSName
+import scala.scalajs.js.annotation.{JSGlobal, JSName}
 import scala.scalajs.js.|
 
 @js.native
-@JSName("Input")
-class Input extends Port {
+@JSGlobal("Input")
+class Input extends Port
+
+@js.native
+private[webmidi] trait InputFacade extends Input {
   @JSName("addListener")
-  private[webmidi] def _addListener(`type`: String, channel: Int | Array[Int] | String, callback: js.Function1[_ <: InputEvent,_]): Input = js.native
+  def _addListener(`type`: String, channel: Int | Array[Int] | String, callback: js.Function1[_ <: InputEvent,_]): Input = js.native
 
   @JSName("removeListener")
-  private[webmidi] def _removeListener(`type`: js.UndefOr[String], channel: js.UndefOr[Int | Array[Int] | String], callback: js.UndefOr[js.Function1[_ <: InputEvent,_]]): Input = js.native
+  def _removeListener(`type`: js.UndefOr[String], channel: js.UndefOr[Int | Array[Int] | String], callback: js.UndefOr[js.Function1[_ <: InputEvent,_]]): Input = js.native
 }
 
 
 object Input {
   implicit final class InputExt(val input: Input) extends AnyVal {
+    private implicit def toFacade(v: Input): InputFacade = v.asInstanceOf[InputFacade]
+
     def addListener(`type`: InputEventName, channel: Channel)(callback: js.Function1[`type`.EventType, _]): Input = {
       input._addListener(`type`.asInstanceOf[String], channel.asJs, callback)
     }

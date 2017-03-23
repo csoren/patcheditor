@@ -2,7 +2,7 @@ package midi.webmidi
 
 import scala.language.implicitConversions
 import scala.scalajs.js
-import scala.scalajs.js.annotation.{JSName, ScalaJSDefined}
+import scala.scalajs.js.annotation.{JSGlobal, JSName, ScalaJSDefined}
 import scala.scalajs.js.|
 
 
@@ -15,13 +15,16 @@ class PlayNoteOptions(duration: js.UndefOr[Long] = js.undefined, rawVelocity: Bo
 
 
 @js.native
-@JSName("Output")
-class Output extends Port {
+@JSGlobal("Output")
+class Output extends Port
+
+@js.native
+private[webmidi] trait OutputFacade extends Output {
   @JSName("sendControlChange")
-  private[webmidi] def _sendControlChange(controller: Int | String, value: js.UndefOr[Int] = js.undefined, channel: js.UndefOr[Int | String] = js.undefined, options: js.UndefOr[ControlChangeOptions] = js.undefined): Output = js.native
+  def _sendControlChange(controller: Int | String, value: js.UndefOr[Int] = js.undefined, channel: js.UndefOr[Int | String] = js.undefined, options: js.UndefOr[ControlChangeOptions] = js.undefined): Output = js.native
 
   @JSName("playNote")
-  private[webmidi] def _playNote(note: Int | String | Array[Int], channel: js.UndefOr[Int | String] = js.undefined, options: js.UndefOr[PlayNoteOptions] = js.undefined): Output = js.native
+  def _playNote(note: Int | String | Array[Int], channel: js.UndefOr[Int | String] = js.undefined, options: js.UndefOr[PlayNoteOptions] = js.undefined): Output = js.native
 }
 
 
@@ -30,6 +33,8 @@ object Output {
     time.fold[js.UndefOr[ControlChangeOptions]](js.undefined)(t => js.defined(new ControlChangeOptions(time = t)))
 
   implicit final class OutputExt(val output: Output) {
+    private implicit def toFacade(v: Output): OutputFacade = v.asInstanceOf[OutputFacade]
+
     def sendControlChange(controller: Int, value: Int = 0, channel: Channel = All(), time: Option[Long] = None): Output =
       output._sendControlChange(controller, value, channel.asJs, asJs(time))
 

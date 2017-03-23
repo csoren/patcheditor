@@ -3,6 +3,7 @@ package droid
 import org.scalajs.dom.ext.Ajax
 
 import scala.concurrent.Future
+import scala.language.implicitConversions
 import scala.scalajs.concurrent.JSExecutionContext.Implicits.queue
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSName
@@ -72,12 +73,16 @@ trait MatrixControllableValue extends js.Any
 
 
 @js.native
-trait WaveformDistortion extends js.Object {
+trait WaveformDistortion extends js.Object
+
+
+@js.native
+private[droid] trait WaveformDistortionFacade extends WaveformDistortion {
   @JSName("waveform")
-  private[droid] val _waveform: String = js.native
+  val _waveform: String = js.native
 
   @JSName("distortion")
-  private[droid] val _distortion: String = js.native
+  val _distortion: String = js.native
 }
 
 
@@ -89,10 +94,14 @@ trait DCO extends js.Object {
   val offset: MatrixControllableValue = js.native
   val pulseWidth: MatrixControllableValue = js.native
   val waveform: MatrixControllableWaveform = js.native
-
-  @JSName("tuningMode")
-  private[droid] val _tuningMode: String = js.native
 }
+
+@js.native
+private[droid] trait DCOFacade extends DCO {
+  @JSName("tuningMode")
+  val _tuningMode: String = js.native
+}
+
 
 @js.native
 trait Envelope extends js.Object {
@@ -108,9 +117,6 @@ trait Envelope extends js.Object {
 trait Patch extends js.Object {
   val name: String = js.native
 
-  @JSName("tags")
-  private[droid] val _tags: js.Array[String] = js.native
-
   val author: String = js.native
   val comment: String = js.native
   val dco1: DCO = js.native
@@ -125,9 +131,17 @@ trait Patch extends js.Object {
   val mixingStructure: Int = js.native
 }
 
+@js.native
+private[droid] trait PatchFacade extends Patch {
+  @JSName("tags")
+  val _tags: js.Array[String] = js.native
+}
+
 
 object Patch {
   implicit final class PatchExt(val patch: Patch) extends AnyVal {
+    private implicit def toFacade(v: Patch): PatchFacade = v.asInstanceOf[PatchFacade]
+
     def tags: js.Array[String] =
       if (patch._tags.length == 0)
         js.Array("Generic")
@@ -166,11 +180,15 @@ object Patch {
   }
 
   implicit final class WaveformDistortionExt(val value: WaveformDistortion) {
+    private implicit def toFacade(v: WaveformDistortion): WaveformDistortionFacade = v.asInstanceOf[WaveformDistortionFacade]
+
     def waveform: droid.Waveform.Waveform = droid.Waveform.withName(value._waveform)
     def distortion: Distortion.Distortion = Distortion.withName(value._distortion)
   }
 
   implicit final class DCOExt(val value: DCO) {
+    private implicit def toFacade(v: DCO): DCOFacade = v.asInstanceOf[DCOFacade]
+
     def tuningMode: TuningMode.TuningMode = TuningMode.withName(value._tuningMode)
   }
 

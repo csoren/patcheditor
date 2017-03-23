@@ -2,11 +2,11 @@ package midi.webmidi
 
 import scala.language.implicitConversions
 import scala.scalajs.js
-import scala.scalajs.js.annotation.JSName
+import scala.scalajs.js.annotation.{JSGlobal, JSName}
 import scala.scalajs.js.{Error, UndefOr, |}
 
 @js.native
-@JSName("WebMidi")
+@JSGlobal("WebMidi")
 private[webmidi] object NativeWebMidi extends js.Object {
   def addListener(`type`: String, listener: js.Function1[PortEvent, Unit]): NativeWebMidi.type = js.native
 

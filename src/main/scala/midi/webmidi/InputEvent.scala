@@ -21,9 +21,12 @@ trait InputEvent extends js.Object {
   val receivedTime: Long = js.native
   val timestamp: Long = js.native
   val channel: Int = js.native
+}
 
+@js.native
+private[webmidi] trait InputEventFacade extends InputEvent {
   @JSName("type")
-  private[webmidi] val _type: String = js.native
+  val _type: String = js.native
 }
 
 

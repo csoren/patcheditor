@@ -7,9 +7,7 @@ version := "1.0"
 
 scalaVersion := "2.12.1"
 
-persistLauncher in Compile := true
-
-persistLauncher in Test := false
+scalaJSUseMainModuleInitializer := true
 
 libraryDependencies ++= Seq(
   "org.scala-js" %%% "scalajs-dom" % "0.9.1",
