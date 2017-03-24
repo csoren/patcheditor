@@ -23,7 +23,7 @@ private[webmidi] trait PortEventFacade extends PortEvent {
 object PortEvent {
   implicit final class PortEventExt(val event: PortEvent) {
     private implicit def toFacade(v: PortEvent): PortEventFacade = v.asInstanceOf[PortEventFacade]
-    
+
     def eventType: PortState.PortState = PortState.withName(event._type)
   }
 }

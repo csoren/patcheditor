@@ -18,7 +18,7 @@ libraryDependencies ++= Seq(
 
 jsDependencies ++= Seq(
   "org.webjars.npm" % "rxjs" % "5.0.1" / "bundles/Rx.min.js" commonJSName "Rx",
-  "org.webjars.npm" % "webmidi" % "2.0.0-rc.4" / "webmidi.min.js"
+  "org.webjars.npm" % "webmidi" % "2.0.0-rc.5" / "webmidi.min.js"
 )
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
