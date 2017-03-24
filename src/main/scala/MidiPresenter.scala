@@ -1,6 +1,7 @@
 import midi.webmidi.{Channel, Input, Output, WebMidi}
 import rxscalajs.Observable
 import ui.Midi
+import reactive._
 
 class MidiPresenter(view: Midi) {
   private val midiPortsChangedObservable =
@@ -15,10 +16,10 @@ class MidiPresenter(view: Midi) {
     midiPortsChangedObservable.map(_ => WebMidi.inputs)
 
   val selectedMidiOutput: Observable[(Output,Channel)] =
-    view.selectedOutput
+    view.selectedOutput.flattenOption
 
   val selectedMidiInput: Observable[(Input,Channel)] =
-    view.selectedInput
+    view.selectedInput.flattenOption
 
   midiOutputPortsObservable.subscribe(view.setOutput(_))
 

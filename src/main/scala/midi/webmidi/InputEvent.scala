@@ -31,11 +31,19 @@ private[webmidi] trait InputEventFacade extends InputEvent {
 
 
 @js.native
-trait NoteOnEvent extends InputEvent {
+trait NoteEvent extends InputEvent {
   val note: Note = js.native
   val velocity: Float = js.native
   val rawVelocity: Int = js.native
 }
+
+
+@js.native
+trait NoteOnEvent extends NoteEvent
+
+
+@js.native
+trait NoteOffEvent extends NoteEvent
 
 
 @js.native
@@ -49,4 +57,5 @@ object InputEventName {
     name.asInstanceOf[InputEventName { type EventType = T }]
 
   val noteon = apply[NoteOnEvent]("noteon")
+  val noteoff = apply[NoteOffEvent]("noteoff")
 }

@@ -25,9 +25,9 @@ class Editor() {
     patchSelector.setMaterialOptions(options)
   }
 
-  val selectedPatchIndex: Observable[Int] =
-    patchSelector.selectedIndexObservable.filter(_ >= 0)
-      .map(n => patchSelector.options(n).value.toInt)
+  val selectedPatchIndex: Observable[Option[Int]] =
+    patchSelector.selectedElementObservable
+      .map(_.map(_.value.toInt))
 
   @dom
   def layout: Binding[Node] =

@@ -6,6 +6,7 @@ import midi.webmidi._
 import org.scalajs.dom.Node
 import org.scalajs.dom.html.Select
 import rxscalajs.Observable
+import reactive._
 
 class Midi() {
   private class PortAndChannel[T <: midi.webmidi.Port](label: String, includeAll: Boolean) {
@@ -28,17 +29,20 @@ class Midi() {
       device.setMaterialOptions(options)
     }
 
-    val selectedDevice: Observable[T] =
-      device.selectedIndexObservable.map(_ports)
+    val selectedDevice: Observable[Option[T]] =
+      device.selectedIndexObservable.map(_.map(_ports))
 
     val selectedChannel: Observable[Channel] =
       channel.selectedValueObservable.map {
-        case "all" => All()
-        case s => Single(s.toInt)
+        case Some(s) => Single(s.toInt)
+        case _ => All()
       }
 
-    val selectedDeviceAndChannel: Observable[(T,Channel)] =
-      selectedDevice.combineLatest(selectedChannel)
+    val selectedDeviceAndChannel: Observable[Option[(T,Channel)]] =
+      selectedDevice.combineLatest(selectedChannel).map {
+        case (Some(d),ch) => Some((d,ch))
+        case _ => None
+      }
 
     @dom
     def div: Binding[Node] = {
@@ -57,14 +61,14 @@ class Midi() {
 
   private val output = new PortAndChannel[Output]("MIDI output device", includeAll = false)
 
-  val selectedOutput: Observable[(Output,Channel)] = output.selectedDeviceAndChannel
+  val selectedOutput: Observable[Option[(Output,Channel)]] = output.selectedDeviceAndChannel
 
   def setOutput(ports: IndexedSeq[Output]): Unit =
     output.setPorts(ports)
 
   private val input = new PortAndChannel[Input]("MIDI input device", includeAll = true)
 
-  val selectedInput: Observable[(Input,Channel)] = input.selectedDeviceAndChannel
+  val selectedInput: Observable[Option[(Input,Channel)]] = input.selectedDeviceAndChannel
 
   def setInput(ports: IndexedSeq[Input]): Unit =
     input.setPorts(ports)

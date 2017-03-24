@@ -5,6 +5,7 @@ import org.scalajs.jquery.{JQueryEventObject, jQuery}
 import org.scalajs.{dom => jsdom}
 import rxscalajs.Observable
 import rxscalajs.subjects.ReplaySubject
+import reactive._
 
 package object ui {
   def mkSelect: Select = jsdom.document.createElement("select").asInstanceOf[Select]
@@ -32,13 +33,25 @@ package object ui {
   }
 
   implicit final class UiSelectExt(val select: Select) {
-    def selectedIndexObservable: Observable[Int] =
-      select.eventAsObservable("change", select.selectedIndex)
+    def optionalSelectedIndex: Option[Int] =
+      select.selectedIndex match {
+        case -1 => None
+        case v => Some(v)
+      }
 
-    def selectedIndexVar: Var[Int] =
-      select.eventAsVar("change", select.selectedIndex)
+    def optionalSelectedElement: Option[HtmlOption] =
+      optionalSelectedIndex.map(select.options)
 
-    def selectedValueObservable: Observable[String] =
-      selectedIndexObservable.map(select.options).map(_.value)
+    def selectedIndexObservable: Observable[Option[Int]] =
+      select.eventAsObservable("change", optionalSelectedIndex)
+
+    def selectedElementObservable: Observable[Option[HtmlOption]] =
+      select.eventAsObservable("change", optionalSelectedElement)
+
+    def selectedIndexVar: Var[Option[Int]] =
+      select.eventAsVar("change", optionalSelectedIndex)
+
+    def selectedValueObservable: Observable[Option[String]] =
+      selectedIndexObservable.map(_.map(select.options)).map(_.map(_.value))
   }
 }
