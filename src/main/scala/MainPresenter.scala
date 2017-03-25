@@ -1,4 +1,5 @@
 import midi.webmidi._
+import reactive._
 
 class MainPresenter(editorView: ui.Editor, midiView: ui.Midi) {
 
@@ -35,7 +36,7 @@ class MainPresenter(editorView: ui.Editor, midiView: ui.Midi) {
     .subscribe { (transmitNoteOn _).tupled }
 
   private def transmitNoteOff(noteOffEvent: NoteOffEvent, midiPort: Output, channel: Channel): Unit = {
-    midiPort.playNote(noteOffEvent.note.number, channel, 0)
+    midiPort.stopNote(noteOffEvent.note.number, channel, noteOffEvent.rawVelocity)
   }
 
   noteOff.withLatestFrom(midiPresenter.selectedMidiOutput)

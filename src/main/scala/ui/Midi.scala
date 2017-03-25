@@ -24,9 +24,14 @@ class Midi() {
     }
 
     def setPorts(ports: IndexedSeq[T]): Unit = {
-      _ports = ports
-      val options = ports.map { p => mkOption(p.name, p.id) }
-      device.setMaterialOptions(options)
+      val newPorts = ports.map(_.id).toSet
+      val oldPorts = _ports.map(_.id).toSet
+      if (newPorts != oldPorts) {
+        println(s"Updated MIDI ports $ports")
+        _ports = ports
+        val options = ports.map { p => mkOption(p.name, p.id) }
+        device.setMaterialOptions(options)
+      }
     }
 
     val selectedDevice: Observable[Option[T]] =
@@ -34,8 +39,8 @@ class Midi() {
 
     val selectedChannel: Observable[Channel] =
       channel.selectedValueObservable.map {
+        case Some("all") | None => All()
         case Some(s) => Single(s.toInt)
-        case _ => All()
       }
 
     val selectedDeviceAndChannel: Observable[Option[(T,Channel)]] =

@@ -1,6 +1,7 @@
 import midi.webmidi.{PortState, WebMidi}
 import rxscalajs.subjects.ReplaySubject
 import rxscalajs.{Observable, Subject}
+import reactive._
 
 package object midi {
   private val _enabledSubject = ReplaySubject.withSize[Boolean](1)
@@ -9,11 +10,11 @@ package object midi {
 
   private val _disconnectedSubject = Subject[midi.webmidi.PortEvent]()
 
-  def enabledObservable: Observable[Boolean] = _enabledSubject
+  def enabledObservable: Observable[Boolean] = _enabledSubject.debugLog("midi.enabled").publishReplay(1).refCount
 
-  def connectedObservable: Observable[midi.webmidi.PortEvent] = _connectedSubject
+  def connectedObservable: Observable[midi.webmidi.PortEvent] = _connectedSubject.debugLog("midi.connected").publishReplay(1).refCount
 
-  def disconnectedObservable: Observable[midi.webmidi.PortEvent] = _disconnectedSubject
+  def disconnectedObservable: Observable[midi.webmidi.PortEvent] = _disconnectedSubject.debugLog("midi.disconnected").publishReplay(1).refCount
 
   _enabledSubject.filter(_ == true).subscribe { _ =>
     WebMidi.addListener(PortState.connected) { _connectedSubject.next }

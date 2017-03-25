@@ -11,7 +11,11 @@ class ControlChangeOptions(time: js.UndefOr[Long] = js.undefined) extends js.Obj
 
 
 @ScalaJSDefined
-class PlayNoteOptions(duration: js.UndefOr[Long] = js.undefined, rawVelocity: Boolean = false, release: Float = 0.5f, time: js.UndefOr[Long] = js.undefined, velocity: Float | Int = 0.5f) extends js.Object
+class PlayNoteOptions(duration: js.UndefOr[Long] = js.undefined, rawVelocity: Boolean = false, release: Float | Int = 0.5f, time: js.UndefOr[Long] = js.undefined, velocity: Float | Int = 0.5f) extends js.Object
+
+
+@ScalaJSDefined
+class StopNoteOptions(rawVelocity: Boolean = false, time: js.UndefOr[Long] = js.undefined, velocity: Float | Int = 0.5f) extends js.Object
 
 
 @js.native
@@ -24,7 +28,10 @@ private[webmidi] trait OutputFacade extends Output {
   def _sendControlChange(controller: Int | String, value: js.UndefOr[Int] = js.undefined, channel: js.UndefOr[Int | String] = js.undefined, options: js.UndefOr[ControlChangeOptions] = js.undefined): Output = js.native
 
   @JSName("playNote")
-  def _playNote(note: Int | String | Array[Int], channel: js.UndefOr[Int | String] = js.undefined, options: js.UndefOr[PlayNoteOptions] = js.undefined): Output = js.native
+  def _playNote(note: Int | String | Array[Int], channel: js.UndefOr[Int | Array[Int] | String] = js.undefined, options: js.UndefOr[PlayNoteOptions] = js.undefined): Output = js.native
+
+  @JSName("stopNote")
+  def _stopNote(note: Int | String | Array[Int], channel: js.UndefOr[Int | Array[Int] | String] = js.undefined, options: js.UndefOr[StopNoteOptions] = js.undefined): Output = js.native
 }
 
 
@@ -40,5 +47,8 @@ object Output {
 
     def playNote(note: Int, channel: Channel = All(), velocity: Int = 96): Output =
       output._playNote(note, channel.asJs, new PlayNoteOptions(rawVelocity = true, velocity = velocity))
+
+    def stopNote(note: Int, channel: Channel = All(), velocity: Int = 96): Output =
+      output._stopNote(note, channel.asJs, new StopNoteOptions(rawVelocity = true, velocity = velocity))
   }
 }
