@@ -10,11 +10,11 @@ package object midi {
 
   private val _disconnectedSubject = Subject[midi.webmidi.PortEvent]()
 
-  def enabledObservable: Observable[Boolean] = _enabledSubject.debugLog("midi.enabled").publishReplay(1).refCount
+  def enabledObservable: Observable[Boolean] = _enabledSubject.publishReplay(1).refCount
 
-  def connectedObservable: Observable[midi.webmidi.PortEvent] = _connectedSubject.debugLog("midi.connected").publishReplay(1).refCount
+  def connectedObservable: Observable[midi.webmidi.PortEvent] = _connectedSubject.publishReplay(1).refCount
 
-  def disconnectedObservable: Observable[midi.webmidi.PortEvent] = _disconnectedSubject.debugLog("midi.disconnected").publishReplay(1).refCount
+  def disconnectedObservable: Observable[midi.webmidi.PortEvent] = _disconnectedSubject.publishReplay(1).refCount
 
   _enabledSubject.filter(_ == true).subscribe { _ =>
     WebMidi.addListener(PortState.connected) { _connectedSubject.next }

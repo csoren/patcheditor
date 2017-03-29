@@ -22,7 +22,7 @@ class Midi(ui: MyMidi) {
       uiChannel.map(_.toOption).map {
         case Some(n) if n >= 0 && n <= 15 => Single(n + 1)
         case _ => All()
-      }.debugLog("selectedChannel")
+      }
 
     def selectedDeviceAndChannel: Observable[(T,Channel)] =
       selectedDevice.combineLatest(selectedChannel)

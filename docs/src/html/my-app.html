@@ -1,0 +1,91 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><html><head><link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="my-icons.html">
+<link rel="import" href="my-editor.html">
+<link rel="import" href="my-midi.html">
+
+</head><body><dom-module id="my-app">
+    <template>
+        <style>
+            :host {
+                --app-primary-color: #4285f4;
+                --app-secondary-color: black;
+
+                display: block;
+            }
+
+            app-header {
+                color: #fff;
+                background-color: var(--app-primary-color);
+            }
+
+            app-header paper-icon-button {
+                --paper-icon-button-ink-color: white;
+            }
+
+        </style>
+
+        <app-header id="header" effects="waterfall" fixed="" condenses="">
+            <app-toolbar>
+                <div main-title="">Patch Editor</div>
+            </app-toolbar>
+            <paper-tabs selected="{{selected}}" sticky="" scrollable="">
+                <paper-tab>Editor</paper-tab>
+                <paper-tab>MIDI</paper-tab>
+            </paper-tabs>
+        </app-header>
+
+        <iron-pages selected="{{selected}}">
+            <my-editor id="editor" name="editor"></my-editor>
+            <my-midi id="midi" name="midi"></my-midi>
+        </iron-pages>
+    </template>
+
+    <script>
+        class MyApp extends Polymer.Element {
+
+            static get is() {
+                return 'my-app';
+            }
+
+            static get properties() {
+                return {
+                    selected: {
+                        type: Number,
+                        value: 1
+                    },
+                };
+            }
+
+            get midi() {
+                return this.shadowRoot.getElementById("midi")
+            }
+
+            get editor() {
+                return this.shadowRoot.getElementById("editor")
+            }
+
+        }
+
+        window.customElements.define(MyApp.is, MyApp);
+    </script>
+</dom-module>
+</body></html>

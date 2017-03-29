@@ -1,7 +1,8 @@
-bower_components/
-build/
+/bower_components
+/build
 node_modules/
-target/
+/target
 .idea/
 .travis.yml
-project/project/
+/project/project
+/project/target
