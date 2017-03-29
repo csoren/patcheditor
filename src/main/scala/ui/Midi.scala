@@ -1,88 +1,44 @@
 package ui
 
-import com.thoughtworks.binding.{Binding, dom}
-import materialize._
 import midi.webmidi._
-import org.scalajs.dom.Node
-import org.scalajs.dom.html.Select
 import rxscalajs.Observable
+
+import scala.scalajs.js
 import reactive._
 
-class Midi() {
-  private class PortAndChannel[T <: midi.webmidi.Port](label: String, includeAll: Boolean) {
+class Midi(ui: MyMidi) {
+  private class PortAndChannel[T <: midi.webmidi.Port](uiSetPorts: js.Array[String] => Unit, uiPort: Observable[js.UndefOr[Int]], uiChannel: Observable[js.UndefOr[Int]]) {
     private var _ports: IndexedSeq[T] = IndexedSeq.empty
 
-    private val device = mkSelect
-
-    private val channel = {
-      val select = mkSelect
-      if (includeAll)
-        select.appendChild(mkOption("All", "all"))
-      val options = (1 to 16).map(_.toString).map(v => mkOption(v, v))
-      options.foreach(select.appendChild)
-      select
-    }
-
     def setPorts(ports: IndexedSeq[T]): Unit = {
-      val newPorts = ports.map(_.id).toSet
-      val oldPorts = _ports.map(_.id).toSet
-      if (newPorts != oldPorts) {
-        println(s"Updated MIDI ports $ports")
-        _ports = ports
-        val options = ports.map { p => mkOption(p.name, p.id) }
-        device.setMaterialOptions(options)
-      }
+      _ports = ports
+      uiSetPorts(js.Array(ports.map(_.name) :_*))
     }
 
-    val selectedDevice: Observable[Option[T]] =
-      device.selectedIndexObservable.map(_.map(_ports))
+    def selectedDevice: Observable[T] =
+      uiPort.map(_.toOption).flattenOption.map(v => _ports(v))
 
-    val selectedChannel: Observable[Channel] =
-      channel.selectedValueObservable.map {
-        case Some("all") | None => All()
-        case Some(s) => Single(s.toInt)
-      }
+    def selectedChannel: Observable[Channel] =
+      uiChannel.map(_.toOption).map {
+        case Some(n) if n >= 0 && n <= 15 => Single(n + 1)
+        case _ => All()
+      }.debugLog("selectedChannel")
 
-    val selectedDeviceAndChannel: Observable[Option[(T,Channel)]] =
-      selectedDevice.combineLatest(selectedChannel).map {
-        case (Some(d),ch) => Some((d,ch))
-        case _ => None
-      }
-
-    @dom
-    def div: Binding[Node] = {
-      <div class="row">
-        <div class="input-field col offset-m3 s10 m5">
-          { device }
-          <label>{ label }</label>
-        </div>
-        <div class="input-field col s2 m1">
-          { channel }
-          <label>Channel</label>
-        </div>
-      </div>
-    }
+    def selectedDeviceAndChannel: Observable[(T,Channel)] =
+      selectedDevice.combineLatest(selectedChannel)
   }
 
-  private val output = new PortAndChannel[Output]("MIDI output device", includeAll = false)
+  private val output = new PortAndChannel[Output](v => ui.outputPortItems = v, ui.outputPortObservable, ui.outputChannelObservable)
 
-  val selectedOutput: Observable[Option[(Output,Channel)]] = output.selectedDeviceAndChannel
+  def setOutput(ports: IndexedSeq[Output]): Unit = output.setPorts(ports)
 
-  def setOutput(ports: IndexedSeq[Output]): Unit =
-    output.setPorts(ports)
+  val selectedOutput: Observable[(Output,Channel)] = output.selectedDeviceAndChannel
 
-  private val input = new PortAndChannel[Input]("MIDI input device", includeAll = true)
+  private val input = new PortAndChannel[Input](v => ui.inputPortItems = v, ui.inputPortObservable, ui.inputChannelObservable)
 
-  val selectedInput: Observable[Option[(Input,Channel)]] = input.selectedDeviceAndChannel
+  def setInput(ports: IndexedSeq[Input]): Unit = input.setPorts(ports)
 
-  def setInput(ports: IndexedSeq[Input]): Unit =
-    input.setPorts(ports)
+  val selectedInput: Observable[(Input,Channel)] = input.selectedDeviceAndChannel
 
-  @dom
-  def layout: Binding[Node] =
-    <div>
-      { output.div.bind }
-      { input.div.bind }
-    </div>
 
 }

@@ -1,25 +1,11 @@
-import com.thoughtworks.binding.dom
-import materialize._
-import org.scalajs.jquery.jQuery
-import org.scalajs.{dom => jsdom}
-
 import scala.scalajs.js
-
+import org.scalajs.dom.document
 
 object Main extends js.JSApp {
+  val app = new ui.App(document.getElementById("app").asInstanceOf[ui.MyApp])
+  val presenter = new MainPresenter(app.editor, app.midi)
 
-  def main(): Unit = {
-    val editorView = new ui.Editor()
-    dom.render(jsdom.document.getElementById("editor"), editorView.layout)
-
-    val midiView = new ui.Midi()
-    dom.render(jsdom.document.getElementById("midi"), midiView.layout)
-
-    val presenter = new MainPresenter(editorView, midiView)
-
-    jQuery("select").material_select()
-    jQuery(".button-collapse").sideNav()
-
+  override def main(): Unit = {
     midi.enable()
   }
 }

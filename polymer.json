@@ -1,0 +1,24 @@
+{
+  "entrypoint": "index.html",
+  "shell": "src/html/my-app.html",
+  "fragments": [
+    "src/html/my-editor.html",
+    "src/html/my-midi.html",
+    "src/html/my-view404.html"
+  ],
+  "sources": [
+    "src/**/*",
+    "images/**/*",
+    "target/scala-2.12/patcheditor-polymer-fastopt.js",
+    "target/scala-2.12/patcheditor-polymer-jsdeps.js",
+    "bower.json"
+  ],
+  "extraDependencies": [
+    "droidpatches.json",
+    "manifest.json",
+    "bower_components/webcomponentsjs/*.js"
+  ],
+  "lint": {
+    "rules": ["polymer-2"]
+  }
+}

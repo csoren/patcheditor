@@ -16,10 +16,10 @@ class MidiPresenter(view: Midi) {
     midiPortsChangedObservable.map(_ => WebMidi.inputs)
 
   val selectedMidiOutput: Observable[(Output,Channel)] =
-    view.selectedOutput.flattenOption
+    view.selectedOutput.debugLog("selectedMidiOutput")
 
   val selectedMidiInput: Observable[(Input,Channel)] =
-    view.selectedInput.flattenOption
+    view.selectedInput.debugLog("selectedMidiInput")
 
   midiOutputPortsObservable.subscribe(view.setOutput(_))
 

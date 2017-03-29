@@ -1,4 +1,3 @@
-import com.thoughtworks.binding.Binding.Var
 import org.scalajs.{dom => jsdom}
 import rxscalajs.{Observable, Observer}
 
@@ -19,11 +18,8 @@ package object reactive {
   }
 
   implicit final class ObservableExt[T](val observable: Observable[T]) extends AnyVal {
-    def toVar(initialValue: T): Var[T] = {
-      val v = Var[T](initialValue)
-      observable.subscribe((t: T) => v := t)
-      v
-    }
+    def flatMapOption(fn: T => Option[T]): Observable[T] =
+      observable.flatMap(t => fn(t).toObservable)
 
     def foreach(fn: T => _): Observable[T] =
       observable.map(v => { fn(v); v })

@@ -1,37 +1,25 @@
 package ui
 
-import com.thoughtworks.binding.{Binding, dom}
-import droid.Patches
-import materialize._
-import org.scalajs.dom.Node
+import droid.{Patch, Patches}
 import rxscalajs.Observable
 
-class Editor() {
+import scala.scalajs.js
 
-  private val patchSelector = mkSelect
+class Editor(ui: MyEditor) {
 
-  @dom
-  private def patchSelectorDiv: Binding[Node] = {
-    <div class="row">
-      <div class="input-field col s12 m6 offset-m3">
-        { patchSelector }
-        <label>Patch</label>
-      </div>
-    </div>
+  private var _patches: IndexedSeq[Patches.OptionValue] = IndexedSeq.empty
+
+  def setPatches(patches: IndexedSeq[Patches.OptionValue]): Unit = {
+    _patches = patches
+    ui.patchItems = js.Array(patches.map(v => s"[${v.category}] ${v.patch.name}") :_*)
   }
 
-  def setPatches(patches: Seq[Patches.OptionValue]): Unit = {
-    val options = patches.map { p => mkOption(s"[${p.category}] ${p.patch.name}", p.index.toString) }
-    patchSelector.setMaterialOptions(options)
-  }
+  private def optionalPatchIndex: Observable[Option[Int]] =
+    ui.patchObservable.map {
+      case -1 => None
+      case n => Some(n)
+    }
 
-  val selectedPatchIndex: Observable[Option[Int]] =
-    patchSelector.selectedElementObservable
-      .map(_.map(_.value.toInt))
-
-  @dom
-  def layout: Binding[Node] =
-    <div>
-      { patchSelectorDiv.bind }
-    </div>
+  val selectedPatch: Observable[Option[Patch]] =
+    optionalPatchIndex.map(_.map(_patches).map(_.patch))
 }
