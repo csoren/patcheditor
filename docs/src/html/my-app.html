@@ -41,11 +41,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 --paper-icon-button-ink-color: white;
             }
 
+            app-header a {
+                color: white;
+                text-decoration: none;
+                font-size: 11pt;
+            }
+
         </style>
 
         <app-header id="header" effects="waterfall" fixed="" condenses="">
             <app-toolbar>
                 <div main-title="">Patch Editor</div>
+                <a href="https://github.com/csoren/patcheditor">GitHub</a>
             </app-toolbar>
             <paper-tabs selected="{{selected}}" sticky="" scrollable="">
                 <paper-tab>Editor</paper-tab>
