@@ -9,13 +9,14 @@
   "sources": [
     "src/**/*",
     "images/**/*",
-    "target/scala-2.12/patcheditor-polymer-fastopt.js",
-    "target/scala-2.12/patcheditor-polymer-jsdeps.js",
     "bower.json"
   ],
   "extraDependencies": [
     "droidpatches.json",
+    "target/scala-2.12/patcheditor-opt.js",
+    "target/scala-2.12/patcheditor-jsdeps.min.js",
     "manifest.json",
+    "service-worker.js",
     "bower_components/webcomponentsjs/*.js"
   ],
   "lint": {
