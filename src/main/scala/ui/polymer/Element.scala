@@ -10,7 +10,6 @@ import scala.scalajs.js.annotation.JSGlobal
 @js.native
 @JSGlobal("Polymer.Element")
 class Element extends HTMLElement {
-
 }
 
 

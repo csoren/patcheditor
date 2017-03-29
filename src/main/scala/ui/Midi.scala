@@ -6,7 +6,7 @@ import rxscalajs.Observable
 import scala.scalajs.js
 import reactive._
 
-class Midi(ui: MyMidi) {
+class Midi(ui: facade.MyMidi) {
   private class PortAndChannel[T <: midi.webmidi.Port](uiSetPorts: js.Array[String] => Unit, uiPort: Observable[js.UndefOr[Int]], uiChannel: Observable[js.UndefOr[Int]]) {
     private var _ports: IndexedSeq[T] = IndexedSeq.empty
 

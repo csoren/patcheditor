@@ -5,7 +5,7 @@ import rxscalajs.Observable
 
 import scala.scalajs.js
 
-class Editor(ui: MyEditor) {
+class Editor(ui: facade.MyEditor) {
 
   private var _patches: IndexedSeq[Patches.OptionValue] = IndexedSeq.empty
 

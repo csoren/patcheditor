@@ -1,6 +1,7 @@
-package ui
+package ui.facade
 
 import rxscalajs.Observable
+import ui.{facade, polymer}
 
 import scala.scalajs.js
 import scala.scalajs.js.annotation.JSGlobal
