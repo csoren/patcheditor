@@ -1,0 +1,25 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/webaudio-controls/webaudio-controls.html">
+
+<dom-module id="styled-switch">
+    <template>
+        <webaudio-switch width="16" height="16" colors="#FFC107;#FFFFFF;#FFC107" tooltip="[[tooltip]]"></webaudio-switch>
+    </template>
+
+    <script>
+        class StyledSwitch extends Polymer.Element {
+
+            static get is() {
+                return 'styled-switch';
+            }
+
+            static get properties() {
+                return {
+                    tooltip: String
+                };
+            }
+        }
+
+        window.customElements.define(StyledSwitch.is, StyledSwitch);
+    </script>
+</dom-module>

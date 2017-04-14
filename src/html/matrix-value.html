@@ -1,0 +1,85 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/webaudio-controls/webaudio-controls.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="styled-knob.html">
+<link rel="import" href="styled-switch.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="matrix-value">
+    <template>
+        <style include="shared-styles">
+            :host {
+                display: block;
+            }
+
+            styled-switch {
+                display: inline-block;
+            }
+
+            styled-knob {
+                display: inline-block;
+            }
+        </style>
+        <style is="custom-style">
+            paper-dropdown-menu.custom {
+                --paper-input-container-label: {
+                    color: var(--paper-pink-500);
+                    font-style: italic;
+                    text-align: center;
+                    font-weight: bold;
+                };
+                --paper-input-container-input: {
+                    color: #FFF;
+                    font-size: 10px;
+                    font-style: normal;
+                    font-family: serif;
+                    text-transform: uppercase;
+                };
+                /* no underline */
+                --paper-input-container-underline: {
+                    display: none;
+                };
+            }
+        </style>
+
+        <div>
+            <styled-knob></styled-knob>
+            <styled-switch tooltip="Enable matrix controller"></styled-switch>
+            <paper-dropdown-menu no-label-float="true" class="custom">
+                <paper-listbox class="dropdown-content" selected="{{selectedMatrixController}}">
+                    <template is="dom-repeat" items="[[matrixControllers()]]">
+                        <paper-item>[[item]]</paper-item>
+                    </template>
+                </paper-listbox>
+            </paper-dropdown-menu>
+        </div>
+    </template>
+
+    <script>
+        class MatrixValue extends Polymer.Element {
+
+            static get is() {
+                return 'matrix-value';
+            }
+
+            static get properties() {
+                return {
+                    selected: {
+                        type: Number,
+                        value: 1
+                    },
+                    selectedMatrixController: {
+                        type: Number,
+                        value: 0
+                    },
+                };
+            }
+
+            matrixControllers() {
+                return ["En1","En2","DC1","DC2","PB","PB2","Mod","Vel","VlG","Gat","Aft","KF","KF2","Hld","Exp","Bth"];
+            }
+        }
+
+        window.customElements.define(MatrixValue.is, MatrixValue);
+    </script>
+</dom-module>

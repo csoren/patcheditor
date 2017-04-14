@@ -1,0 +1,24 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/webaudio-controls/webaudio-controls.html">
+
+<dom-module id="styled-knob">
+    <template>
+        <webaudio-knob diameter="24" colors="#FFFFFF;#FFC107;#FFC107"></webaudio-knob>
+    </template>
+
+    <script>
+        class StyledKnob extends Polymer.Element {
+
+            static get is() {
+                return 'styled-knob';
+            }
+
+            static get properties() {
+                return {
+                };
+            }
+        }
+
+        window.customElements.define(StyledKnob.is, StyledKnob);
+    </script>
+</dom-module>
