@@ -22,7 +22,8 @@
     "polymer": "Polymer/polymer#^2.0.0",
     "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0",
     "web-animations-js": "^2.2.5",
-    "webaudio-controls": "g200kg/webaudio-controls"
+    "webaudio-controls": "g200kg/webaudio-controls",
+    "iron-demo-helpers": "^2.0.0"
   },
   "devDependencies": {
     "web-component-tester": "^6.0.0"

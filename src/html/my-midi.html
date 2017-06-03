@@ -30,14 +30,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div class="card">
             <div>
                 <paper-dropdown-menu label="Output port">
-                    <paper-listbox class="dropdown-content" selected="{{selectedOutputPort}}">
+                    <paper-listbox slot="dropdown-content" class="dropdown-content" selected="{{selectedOutputPort}}">
                         <template is="dom-repeat" items="[[outputPortItems]]">
                             <paper-item>[[item]]</paper-item>
                         </template>
                     </paper-listbox>
                 </paper-dropdown-menu>
                 <paper-dropdown-menu label="Channel" style="width:4em;">
-                    <paper-listbox class="dropdown-content" selected="{{selectedOutputChannel}}">
+                    <paper-listbox slot="dropdown-content" class="dropdown-content" selected="{{selectedOutputChannel}}">
                         <template is="dom-repeat" items="[[channelList()]]">
                             <paper-item>[[item]]</paper-item>
                         </template>
@@ -46,14 +46,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </div>
             <div>
                 <paper-dropdown-menu label="Input port">
-                    <paper-listbox class="dropdown-content" selected="{{selectedInputPort}}">
+                    <paper-listbox slot="dropdown-content" class="dropdown-content" selected="{{selectedInputPort}}">
                         <template is="dom-repeat" items="[[inputPortItems]]">
                             <paper-item>[[item]]</paper-item>
                         </template>
                     </paper-listbox>
                 </paper-dropdown-menu>
                 <paper-dropdown-menu label="Channel" style="width:4em;">
-                    <paper-listbox class="dropdown-content" selected="{{selectedInputChannel}}">
+                    <paper-listbox slot="dropdown-content" class="dropdown-content" selected="{{selectedInputChannel}}">
                         <template is="dom-repeat" items="[[channelList()]]">
                             <paper-item>[[item]]</paper-item>
                         </template>

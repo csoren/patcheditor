@@ -24,7 +24,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         <div class="card">
             <paper-dropdown-menu label="Patch">
-                <paper-listbox class="dropdown-content" selected="{{selectedPatch}}">
+                <paper-listbox slot="dropdown-content"class="dropdown-content" selected="{{selectedPatch}}">
                     <template is="dom-repeat" items="[[patchItems]]">
                         <paper-item>[[item]]</paper-item>
                     </template>
