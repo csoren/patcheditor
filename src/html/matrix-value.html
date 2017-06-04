@@ -30,35 +30,10 @@
         </style>
         <style is="custom-style">
             paper-dropdown-menu.custom {
-                --paper-input-container: {
-                    margin: 0;
-                    padding: 0;
-                };
-                --paper-dropdown-menu-ripple: {
-                    top: 0;
-                    bottom: 0;
-                };
-                --paper-dropdown-menu-button: {
-                };
-                --paper-input-container-label: {
-                    color: var(--paper-pink-500);
-                    font-style: italic;
-                    text-align: center;
-                    font-weight: bold;
-                };
                 --paper-input-container-input: {
                     color: #000000;
                     font-size: 10px;
                     text-transform: uppercase;
-                };
-                --paper-input-container-input: {
-                    color: #000000;
-                    font-size: 10px;
-                    text-transform: uppercase;
-                };
-                /* no underline */
-                --paper-input-container-underline: {
-                    display: none;
                 };
             }
         </style>
@@ -66,7 +41,7 @@
         <div>
             <styled-knob></styled-knob>
             <styled-switch tooltip="Enable matrix controller"></styled-switch>
-            <paper-dropdown-menu id="matrixController" hint="Hmm" no-label-float="true" class="custom">
+            <paper-dropdown-menu id="matrixController" label="Controller" class="custom">
                 <paper-listbox slot="dropdown-content" class="dropdown-content" selected="{{selectedMatrixController}}">
                     <template is="dom-repeat" items="[[matrixControllers()]]">
                         <paper-item>[[item]]</paper-item>
