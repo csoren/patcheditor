@@ -9,19 +9,37 @@
     <template>
         <style include="shared-styles">
             :host {
-                display: block;
+                display: flex;
+                align-items: center;
+                margin: 0;
+                padding: 0;
             }
 
             styled-switch {
                 display: inline-block;
+                alignment: center;
+                margin: 0;
             }
 
             styled-knob {
                 display: inline-block;
+                align-self: center;
+                margin: 0;
             }
+
         </style>
         <style is="custom-style">
             paper-dropdown-menu.custom {
+                --paper-input-container: {
+                    margin: 0;
+                    padding: 0;
+                };
+                --paper-dropdown-menu-ripple: {
+                    top: 0;
+                    bottom: 0;
+                };
+                --paper-dropdown-menu-button: {
+                };
                 --paper-input-container-label: {
                     color: var(--paper-pink-500);
                     font-style: italic;
@@ -29,10 +47,13 @@
                     font-weight: bold;
                 };
                 --paper-input-container-input: {
-                    color: #FFF;
+                    color: #000000;
                     font-size: 10px;
-                    font-style: normal;
-                    font-family: serif;
+                    text-transform: uppercase;
+                };
+                --paper-input-container-input: {
+                    color: #000000;
+                    font-size: 10px;
                     text-transform: uppercase;
                 };
                 /* no underline */
@@ -45,8 +66,8 @@
         <div>
             <styled-knob></styled-knob>
             <styled-switch tooltip="Enable matrix controller"></styled-switch>
-            <paper-dropdown-menu no-label-float="true" class="custom">
-                <paper-listbox class="dropdown-content" selected="{{selectedMatrixController}}">
+            <paper-dropdown-menu id="matrixController" hint="Hmm" no-label-float="true" class="custom">
+                <paper-listbox slot="dropdown-content" class="dropdown-content" selected="{{selectedMatrixController}}">
                     <template is="dom-repeat" items="[[matrixControllers()]]">
                         <paper-item>[[item]]</paper-item>
                     </template>

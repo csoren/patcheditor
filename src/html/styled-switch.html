@@ -3,6 +3,11 @@
 
 <dom-module id="styled-switch">
     <template>
+        <style include="shared-styles">
+            :host {
+                height: 16px;
+            }
+        </style>
         <webaudio-switch width="16" height="16" colors="#FFC107;#FFFFFF;#FFC107" tooltip="[[tooltip]]"></webaudio-switch>
     </template>
 
