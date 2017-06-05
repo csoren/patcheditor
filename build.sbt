@@ -5,9 +5,9 @@ name := "patcheditor"
 
 version := "1.0"
 
-scalaVersion := "2.12.1"
+scalaVersion := "2.12.2"
 
-scalacOptions ++= Seq("-feature")
+scalacOptions ++= Seq("-feature", "-P:scalajs:sjsDefinedByDefault")
 
 scalaJSUseMainModuleInitializer := true
 

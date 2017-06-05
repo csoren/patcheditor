@@ -2,19 +2,16 @@ package midi.webmidi
 
 import scala.language.implicitConversions
 import scala.scalajs.js
-import scala.scalajs.js.annotation.{JSGlobal, JSName, ScalaJSDefined}
+import scala.scalajs.js.annotation.{JSGlobal, JSName}
 import scala.scalajs.js.|
 
 
-@ScalaJSDefined
 class ControlChangeOptions(time: js.UndefOr[Long] = js.undefined) extends js.Object
 
 
-@ScalaJSDefined
 class PlayNoteOptions(duration: js.UndefOr[Long] = js.undefined, rawVelocity: Boolean = false, release: Float | Int = 0.5f, time: js.UndefOr[Long] = js.undefined, velocity: Float | Int = 0.5f) extends js.Object
 
 
-@ScalaJSDefined
 class StopNoteOptions(rawVelocity: Boolean = false, time: js.UndefOr[Long] = js.undefined, velocity: Float | Int = 0.5f) extends js.Object
 
 
